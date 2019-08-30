@@ -20,16 +20,29 @@ Come up with a consensus list among your group members.
 
 Compare your list to other groups' lists. 
 
+-Good use of colors (accessible color palette)
+-Expected use of color gradients
+-Label everything (axis, units) *
+-Legible font sizes *
+-Legible data point sizes (large or small enough) *
+-Scale of axises
+-Having a legend *
+-Appropriate graph type *
+-Interactive data (if it's digital)
+
 ## Exploring web resources for visualization
 
 1. Navigate to https://www.data-to-viz.com/.
 2. Think of a dataset that you or someone in your field might want to visualize. What types of variables does this dataset contain? What information might you want to convey with a visualization?
 
-<add notes here>
+<There is CODE!!!!>
 
 3. Scroll to the "Explore" section of the website. Follow the flow chart to find a type of graph that would suit your data. Click for more information and a link to the R Graph Gallery. If there are multiple options for graphing your data, how might you choose between them?
 
-<add notes here> 
+<I would ask someone not working on my project to identify which graph is the easiest to understand> 
+
+<Density plots are good - ridgeline is many density>
+<Boxplots can be misleading with varying sample sizes>
 
 4. Discuss and compare your findings with a partner.
 5. Scroll further down to the "Caveats" section of the website and click "See the Collection." Choose five topics to explore (some of these are incomplete so choose another if that is the case). Write some notes about what you learned below. 
@@ -75,10 +88,10 @@ pal_futurama (function; comes in the ggsci package)
 ```{r}
 getwd()
 
-#install.packages(tidyverse)
-#install.packages(dataRetrieval)
-#install.packages(zoo)
-#install.packages(ggrepel)
+install.packages("tidyverse")
+install.packages("dataRetrieval")
+install.packages("zoo")
+install.packages("ggrepel")
 
 library(tidyverse)
 library(dataRetrieval)
@@ -121,11 +134,18 @@ Challenge:
 
 1. Build a plot called EnoPlot2.
 
+
 2. Add a column to your data frame for discharge in meters cubed per second
 
 hint: package dplyr in tidyverse includes a `mutate` function
 
+EnoDischarge <- EnoDischarge %>% 
+  mutate(Discharge.m3.sec = Discharge/35.315)
+
 3. Add a column in your data frame for a 30-day rolling mean of the metric discharge
+
+EnoDischarge <- EnoDischarge %>%
+  mutate(RollingMean = mean()) <I AM STUCK HERE>
 
 hint: package dplyr in tidyverse includes a `mutate` function
 hint: package zoo includes a `rollmean` function
