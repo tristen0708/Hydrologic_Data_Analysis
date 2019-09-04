@@ -13,6 +13,9 @@ editor_options:
 2. Apply data analytics skills to applied questions about physical properties of lakes
 3. Communicate findings with peers through oral, visual, and written modes
 
+
+Note to self: :qa! gets rid of MERGE conflict
+
 ## Opening Discussion
 What is a lake? How does this differ from a stream, river, or wetland?
 
