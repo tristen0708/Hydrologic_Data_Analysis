@@ -1,6 +1,6 @@
 ---
 title: "Assignment 1: Introduction"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -23,27 +23,27 @@ The completed exercise is due on 2019-09-04 before class begins.
 ## Course Setup
 1. Post the link to your forked GitHub repository below. Your repo should include one or more commits and an edited README file.  
 
->  Link:
+>  Link: https://github.com/tristen0708/Hydrologic_Data_Analysis
 
 2. Complete the Consent Form in Sakai. You must choose to either opt in or out of the research study being conducted in our course.
 
 Did you complete the form? (yes/no)
 
-> 
+> Yes
 
 ## Course Project
 
 3. What are some topics in aquatic science that are particularly interesting to you?
 
-> ANSWER: 
+> ANSWER: Water quality (especially drinking water), limnology (especially groundwater & wetlands), HABs
 
 4. Are there specific people in class who you would specifically like to have on your team?
 
-> ANSWER: 
+> ANSWER: No, I am ok to work with any students. If I am assigned a project related to HABs working with fellow MP students may be beneficial.
 
 5. Are there specific people in class who you would specifically *not* like to have on your team?
 
-> ANSWER: 
+> ANSWER: No. 
 
 ## Data Visualization Exercises
 
@@ -51,17 +51,44 @@ Did you complete the form? (yes/no)
 
 ```{r, message = FALSE}
 
+getwd()
+
+library(tidyverse)
+library(dataRetrieval)
+library(lubridate)
+
+#install.packages("viridis")
+library(viridis)
+
+#install.packages("devtools") 
+#devtools::install_github("johannesbjork/LaCroixColoR")
+library(LaCroixColoR)
+
+mytheme <- theme_classic()
+theme_set(mytheme)
+
 ```
 
 7. Upload discharge data for the Eno River at site 02096500 for the same dates as we studied in class (2009-08-01 through 2019-07-31). Obtain data for discharge and gage height (you will need to look up these parameter codes). Rename the columns with informative titles. Imperial units can be retained (no need to change to metric).
 
 ```{r}
 
+#Uploading discharge data
+EnoDischarge <- readNWISdv(siteNumbers = "02096500",
+                     parameterCd = c("00060", "00065"), # discharge (ft3/s) , gage height (ft)
+                     startDate = "2009-08-01",
+                     endDate = "2019-07-31")
+
+names(EnoDischarge)[4:7] <- c("Discharge", "Dis.Approval.Code", "Gage.Height", "GH.Approval.Code")
+
+
 ```
 
 8. Add a "year" column to your data frame (hint: lubridate has a `year` function).
 
 ```{r}
+
+EnoDischarge$Year <- year(EnoDischarge$Date)
 
 ```
 
@@ -71,22 +98,39 @@ Did you complete the form? (yes/no)
 * Change color palette from ggplot default
 * Make points 50 % transparent
 
-```{r}
+```{r, fig.height = 7, fig.width = 6}
+
+Discharge.vs.gage <- ggplot(EnoDischarge, aes(x = Gage.Height, y = Discharge)) +
+  geom_point(alpha = 0.5, color="darkred") +
+  labs(x= "Gage Height, (ft)", y= "Discharge, (cubic ft/s)") 
+  
+print(Discharge.vs.gage)  
+
 
 ```
 
 10. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: There is a clear, positive relationship that exists between discharge and gage height. As gage height increases, so does discharge. 
 
 11. Create a ggplot violin plot of discharge, divided by year. (Hint: in your aesthetics, specify year as a factor rather than a continuous variable). Make the following edits to follow good data visualization practices: 
 
 * Remove x axis label
 * Add a horizontal line at the 0.5 quantile within each violin (hint: draw_quantiles)
-```{r}
+```{r, fig.height = 7, fig.width = 6}
+
+Discharge.Year <- ggplot(EnoDischarge, aes(x = as.factor(Year), y = Discharge, color = as.factor(Year))) +
+  geom_violin(draw_quantiles = 0.5, trim=TRUE) +
+  labs(x = "", y= "Discharge, (cubic ft/s)") 
+  #lacroix_palette("PeachPear", n = 10, type = "discrete")
+  #scale_color_viridis(discrete = TRUE, option = "B") +
+  #theme(legend.position="none")
+  
+print(Discharge.Year)  
+
 
 ```
 
 12. Interpret the graph you made. Write 2-3 sentences communicating the main takeaway points. 
 
-> ANSWER: 
+> ANSWER: It seems there may have been a drought in 2011, as discharge drops significantly then. Since then, discharge as steadily increased and peaks in 2018. Given the "wide violins", it's likely that most of the data collected for discharge is in the center of the data, and the extreme values for discharge can be attributed to extreme events that occur each year.
