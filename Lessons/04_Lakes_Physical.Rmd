@@ -17,6 +17,8 @@ editor_options:
 ## Opening Discussion
 We analyzed temperature profiles and seasonal changes on Wednesday. What were some key takeaway points about thermal stratification and mixing?
 
+<Mixing happens at surface and bottom (epi- and hypo-, respectively). The middle is metalimnion/thermcline. The thermocline is defined by more than 1 degree change in temperature within 1 meter.>
+
 ## Session Set Up
 ```{r, message = FALSE}
 getwd()
@@ -38,7 +40,7 @@ theme_set(theme_classic())
 
 ```{r}
 # Change sampledate to Date
-NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y")
+NTLdata$sampledate <- as.Date(NTLdata$sampledate, "%m/%d/%y") #this is format is CAME IN
 
 # Make three data frames, one for each lake
 Pauldata <- filter(NTLdata, lakename == "Paul Lake")
@@ -60,7 +62,7 @@ Tempprofiles2016 <-
   geom_point() +
   scale_y_reverse() +
   scale_x_continuous(position = "top") +
-  scale_color_viridis_c(end = 0.8, option = "magma") +
+  scale_color_viridis_c(end = 0.8, option = "magma") +  #end at 0.8 gets rid of yellow
   labs(x = expression("Temperature "(degree*C)), y = "Depth (m)") +
   theme(legend.position = "none")
 print(Tempprofiles2016)
@@ -96,16 +98,17 @@ print(Physicalprofiles2016)
 
 How do temperature profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
+> Temperatures, particularly surface, increase across the time frame that data was collected. Some mixing occurring in August. 
 
 How do irradiance profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
+> Increased irradiance at surface up until day 210ish -- algal bloom? Sediments? & turbidity? 
 
 How do dissolved oxygen profiles vary over the course of a season? What are the mechanisms for this pattern?
 
-> 
-
+> Decreases...with temperature increase... descreased lined up with bloom? when they die they suck up oxygen..
+>Deep chlorophyll maximum- spike in oxygen.. has lots of nutrients and light
+>No plants at the bottom... bacterial respiration, lots more fish and mermaids... all where things sink and die
 
 ## Data Analysis
 
@@ -123,7 +126,56 @@ Steps:
 
 ```{r}
 
+Pauldata$Month <- month(Pauldata$sampledate)
+Pauldata.filtered <- Pauldata %>% 
+  filter(depth == 0.00 & Month %in% c(5:8))
 
+Paul.may <- Pauldata.filtered %>% 
+  filter(Month == 5)
+  
+Paul.june <- Pauldata.filtered %>% 
+  filter(Month == 6)
+
+Paul.july <- Pauldata.filtered %>% 
+  filter(Month == 7)
+
+Paul.aug <- Pauldata.filtered %>% 
+  filter(Month == 8)
+
+
+Paul.may.lm <- lm(temperature_C ~ year4, Paul.may) #Do not reject the null
+Paul.june.lm <- lm(temperature_C ~ year4, Paul.june) #Do not reject the null
+Paul.july.lm <- lm(temperature_C ~ year4, Paul.july) #Reject the null!!! p = 0.0003852
+Paul.aug.lm <- lm(temperature_C ~ year4, Paul.aug) #Reject the null!!! p = 0.01176
+
+summary(Paul.may.lm)
+summary(Paul.june.lm)
+summary(Paul.july.lm)
+summary(Paul.aug.lm)
+
+#July, 0.06007 * 33
+#August, 0.04051 * 33
+
+Paul_temp <- ggplot(Pauldata.filtered, aes(x = year4, y = temperature_C)) +
+geom_point() +
+  geom_smooth(se = FALSE, method = lm) +
+  facet_grid(rows = vars(Month))
+print(Paul_temp)
+
+Paul.plot.july <- ggplot(Paul.july, aes(x = year4, y = temperature_C)) +
+geom_point() +
+  geom_smooth(se = FALSE, method = lm) 
+print(Paul.plot.july)
+
+Paul.plot.aug <- ggplot(Paul.aug, aes(x = year4, y = temperature_C)) +
+geom_point() +
+  geom_smooth(se = FALSE, method = lm) 
+print(Paul.plot.aug)
+
+Paul_cow <- 
+  plot_grid(Paul.plot.july, Paul.plot.aug, 
+            nrow = 2)
+print(Paul_cow)
 
 ```
 
