@@ -1,0 +1,649 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Assignment 2: Physical Properties of Lakes},
+            pdfauthor={Tristen Townsend},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Assignment 2: Physical Properties of Lakes}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Tristen Townsend}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\hypertarget{overview}{%
+\subsection{OVERVIEW}\label{overview}}
+
+This exercise accompanies the lessons in Hydrologic Data Analysis on the
+physical properties of lakes.
+
+\hypertarget{directions}{%
+\subsection{Directions}\label{directions}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Change ``Student Name'' on line 3 (above) with your name.
+\item
+  Work through the steps, \textbf{creating code and output} that fulfill
+  each instruction.
+\item
+  Be sure to \textbf{answer the questions} in this assignment document.
+\item
+  When you have completed the assignment, \textbf{Knit} the text and
+  code into a single PDF file.
+\item
+  After Knitting, submit the completed exercise (PDF file) to the
+  dropbox in Sakai. Add your last name into the file name (e.g.,
+  ``Salk\_A02\_LakePhysical.Rmd'') prior to submission.
+\end{enumerate}
+
+The completed exercise is due on 11 September 2019 at 9:00 am.
+
+\hypertarget{setup}{%
+\subsection{Setup}\label{setup}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Verify your working directory is set to the R project file,
+\item
+  Load the tidyverse, lubridate, and cowplot packages
+\item
+  Import the NTL-LTER physical lake dataset and set the date column to
+  the date format
+\item
+  Set your ggplot theme (can be theme\_classic or something else)
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "/Users/Tristen/OneDrive - Duke University/Fall 2019/Hydrologic Data Analysis/Hydrologic_Data_Analysis"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ---------------------------- tidyverse 1.2.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   0.8.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lubridate)  }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     date
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(cowplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## ********************************************************
+\end{verbatim}
+
+\begin{verbatim}
+## Note: As of version 1.0.0, cowplot does not change the
+\end{verbatim}
+
+\begin{verbatim}
+##   default ggplot2 theme anymore. To recover the previous
+\end{verbatim}
+
+\begin{verbatim}
+##   behavior, execute:
+##   theme_set(theme_cowplot())
+\end{verbatim}
+
+\begin{verbatim}
+## ********************************************************
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'cowplot'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:lubridate':
+## 
+##     stamp
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(RColorBrewer)}
+
+\NormalTok{NTLdata <-}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"./Data/Raw/NTL-LTER_Lake_ChemistryPhysics_Raw.csv"}\NormalTok{)}
+\NormalTok{NTLdata}\OperatorTok{$}\NormalTok{sampledate <-}\StringTok{ }\KeywordTok{as.Date}\NormalTok{(NTLdata}\OperatorTok{$}\NormalTok{sampledate, }\StringTok{"%m/%d/%y"}\NormalTok{) }
+
+\KeywordTok{theme_set}\NormalTok{(}\KeywordTok{theme_classic}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{creating-and-analyzing-lake-temperature-profiles}{%
+\subsection{Creating and analyzing lake temperature
+profiles}\label{creating-and-analyzing-lake-temperature-profiles}}
+
+\hypertarget{single-lake-multiple-dates}{%
+\subsubsection{Single lake, multiple
+dates}\label{single-lake-multiple-dates}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Choose either Peter or Tuesday Lake. Create a new data frame that
+  wrangles the full data frame so that it only includes that lake during
+  two different years (one year from the early part of the dataset and
+  one year from the late part of the dataset).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Choose Tuesday}
+\NormalTok{Tuesdaydata <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(NTLdata, lakename }\OperatorTok{==}\StringTok{ "Tuesday Lake"}\NormalTok{)}
+
+\CommentTok{#Filter for years 1985 and 2015}
+\NormalTok{Tuesdaydata.}\FloatTok{1985.2015}\NormalTok{ <-}\StringTok{ }\KeywordTok{filter}\NormalTok{(Tuesdaydata, year4 }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"1985"}\NormalTok{, }\StringTok{"2015"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Create three graphs: (1) temperature profiles for the early year, (2)
+  temperature profiles for the late year, and (3) a \texttt{plot\_grid}
+  of the two graphs together. Choose \texttt{geom\_point} and color your
+  points by date.
+\end{enumerate}
+
+Remember to edit your graphs so they follow good data visualization
+practices.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Temperature profile for 1985 }
+\NormalTok{TuesdayTemp1985 <-}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{filter}\NormalTok{(Tuesdaydata.}\FloatTok{1985.2015}\NormalTok{, year4 }\OperatorTok{==}\StringTok{ }\DecValTok{1985}\NormalTok{), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ temperature_C, }\DataTypeTok{y =}\NormalTok{ depth, }\DataTypeTok{color =}\NormalTok{ daynum)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{17}\NormalTok{, }\FloatTok{2.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{expand_limits}\NormalTok{(}\DataTypeTok{y=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{16}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_reverse}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{expand_limits}\NormalTok{(}\DataTypeTok{x=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{25}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{end =} \FloatTok{0.8}\NormalTok{, }\DataTypeTok{option =} \StringTok{"plasma"}\NormalTok{) }\OperatorTok{+}\StringTok{  }\CommentTok{#end at 0.8 gets rid of yellow}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{expression}\NormalTok{(}\StringTok{"Temperature "}\NormalTok{(degree}\OperatorTok{*}\NormalTok{C)), }\DataTypeTok{y =} \StringTok{"Depth (m)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"none"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Scale for 'y' is already present. Adding another scale for 'y', which
+## will replace the existing scale.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(TuesdayTemp1985)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 36 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A02_LakePhysical_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Temperature profile for 2015}
+\NormalTok{TuesdayTemp2015 <-}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{filter}\NormalTok{(Tuesdaydata.}\FloatTok{1985.2015}\NormalTok{, year4 }\OperatorTok{==}\StringTok{ }\DecValTok{2015}\NormalTok{), }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ temperature_C, }\DataTypeTok{y =}\NormalTok{ depth, }\DataTypeTok{color =}\NormalTok{ daynum)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks=}\KeywordTok{seq}\NormalTok{(}\DecValTok{0}\NormalTok{, }\DecValTok{17}\NormalTok{, }\FloatTok{2.5}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_reverse}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{expand_limits}\NormalTok{(}\DataTypeTok{y=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{16}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{expand_limits}\NormalTok{(}\DataTypeTok{x=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{25}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{end =} \FloatTok{0.8}\NormalTok{, }\DataTypeTok{option =} \StringTok{"plasma"}\NormalTok{, }\DataTypeTok{name =} \StringTok{"Ordinal Day"}\NormalTok{) }\OperatorTok{+}\StringTok{  }\CommentTok{#end at 0.8 gets rid of yellow}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{expression}\NormalTok{(}\StringTok{"Temperature "}\NormalTok{(degree}\OperatorTok{*}\NormalTok{C)), }\DataTypeTok{y =} \StringTok{""}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"right"}\NormalTok{, }\DataTypeTok{axis.text.y=}\KeywordTok{element_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Scale for 'y' is already present. Adding another scale for 'y', which
+## will replace the existing scale.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(TuesdayTemp2015)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A02_LakePhysical_files/figure-latex/unnamed-chunk-3-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Tuesday_cow <-}\StringTok{ }
+\StringTok{  }\KeywordTok{plot_grid}\NormalTok{(TuesdayTemp1985, TuesdayTemp2015, }
+            \DataTypeTok{ncol =} \DecValTok{2}\NormalTok{, }\DataTypeTok{rel_widths =} \KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\FloatTok{1.4}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 36 rows containing missing values (geom_point).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: Removed 30 rows containing missing values (geom_point).
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{print}\NormalTok{(Tuesday_cow)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{A02_LakePhysical_files/figure-latex/unnamed-chunk-3-3.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  Interpret the stratification patterns in your graphs in light of
+  seasonal trends. In addition, do you see differences between the two
+  years?
+\end{enumerate}
+
+\begin{quote}
+It appears that surface temperatures have increased.
+\end{quote}
+
+\hypertarget{multiple-lakes-single-date}{%
+\subsubsection{Multiple lakes, single
+date}\label{multiple-lakes-single-date}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  On July 25, 26, and 27 in 2016, all three lakes (Peter, Paul, and
+  Tuesday) were sampled. Wrangle your data frame to include just these
+  three dates.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Wrangling for just July 25, 26, 27}
+\NormalTok{Julydata <-}\StringTok{ }\NormalTok{NTLdata }\OperatorTok{%>%}\StringTok{ }\KeywordTok{filter}\NormalTok{(sampledate }\OperatorTok{==}\StringTok{ "2016-07-25"} \OperatorTok{|}\StringTok{ }\NormalTok{sampledate }\OperatorTok{==}\StringTok{ "2016-07-26"} \OperatorTok{|}\StringTok{ }\NormalTok{sampledate }\OperatorTok{==}\StringTok{ "2016-07-27"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  Plot a profile line graph of temperature by depth, one line per lake.
+  Each lake can be designated by a separate color.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{Julyplot <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(Julydata, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x=}\NormalTok{temperature_C, }\DataTypeTok{y=}\NormalTok{depth, }\DataTypeTok{color=}\NormalTok{lakename)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_line}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_reverse}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_brewer}\NormalTok{(}\DataTypeTok{palette=}\StringTok{"Paired"}\NormalTok{, }\DataTypeTok{name=}\StringTok{"Lake Name"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \KeywordTok{expression}\NormalTok{(}\StringTok{"Temperature "}\NormalTok{(degree}\OperatorTok{*}\NormalTok{C)), }\DataTypeTok{y =} \StringTok{"Depth (m)"}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(Julyplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 6 rows containing missing values (geom_path).
+\end{verbatim}
+
+\includegraphics{A02_LakePhysical_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{9}
+\tightlist
+\item
+  What is the depth range of the epilimnion in each lake? The
+  thermocline? The hypolimnion?
+\end{enumerate}
+
+\begin{quote}
+The depth ranges of the epilimnion, thermocline, and hypolimnion are the
+surface to 1.3-2.5m, 2.5-6.25m, and 6.25 to the bottom, respectively.
+\end{quote}
+
+\hypertarget{trends-in-surface-temperatures-over-time.}{%
+\subsection{Trends in surface temperatures over
+time.}\label{trends-in-surface-temperatures-over-time.}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{10}
+\tightlist
+\item
+  Run the same analyses we ran in class to determine if surface lake
+  temperatures for a given month have increased over time (``Long-term
+  change in temperature'' section of day 4 lesson in its entirety), this
+  time for either Peter or Tuesday Lake.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Add a month column to Tuesday dataframe}
+\NormalTok{Tuesdaydata}\OperatorTok{$}\NormalTok{Month <-}\StringTok{ }\KeywordTok{month}\NormalTok{(Tuesdaydata}\OperatorTok{$}\NormalTok{sampledate)}
+
+\CommentTok{#Filter for surface depth}
+\NormalTok{Tuesdaydata.surf <-}\StringTok{ }\NormalTok{Tuesdaydata }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(depth }\OperatorTok{==}\StringTok{ }\FloatTok{0.00}\NormalTok{)}
+
+\CommentTok{#Create separate data frames for each month}
+\NormalTok{Tuesday.may <-}\StringTok{ }\NormalTok{Tuesdaydata.surf }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Month }\OperatorTok{==}\StringTok{ }\DecValTok{5}\NormalTok{)}
+  
+\NormalTok{Tuesday.june <-}\StringTok{ }\NormalTok{Tuesdaydata.surf }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Month }\OperatorTok{==}\StringTok{ }\DecValTok{6}\NormalTok{)}
+
+\NormalTok{Tuesday.july <-}\StringTok{ }\NormalTok{Tuesdaydata.surf }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Month }\OperatorTok{==}\StringTok{ }\DecValTok{7}\NormalTok{)}
+
+\NormalTok{Tuesday.aug <-}\StringTok{ }\NormalTok{Tuesdaydata.surf }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Month }\OperatorTok{==}\StringTok{ }\DecValTok{8}\NormalTok{)}
+
+\CommentTok{#Run linear regression}
+\NormalTok{Tuesday.may.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{year4, Tuesday.may) }
+\NormalTok{Tuesday.june.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{year4, Tuesday.june) }
+\NormalTok{Tuesday.july.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{year4, Tuesday.july) }
+\NormalTok{Tuesday.aug.lm <-}\StringTok{ }\KeywordTok{lm}\NormalTok{(temperature_C }\OperatorTok{~}\StringTok{ }\NormalTok{year4, Tuesday.aug) }
+
+\KeywordTok{summary}\NormalTok{(Tuesday.may.lm) }\CommentTok{# p = 0.5558 DO NOT REJECT NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = temperature_C ~ year4, data = Tuesday.may)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.6223 -1.4411  0.0314  1.5604  5.2216 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)
+## (Intercept) -27.15303   73.73032  -0.368    0.715
+## year4         0.02196    0.03689   0.595    0.556
+## 
+## Residual standard error: 2.522 on 32 degrees of freedom
+## Multiple R-squared:  0.01095,    Adjusted R-squared:  -0.01995 
+## F-statistic: 0.3544 on 1 and 32 DF,  p-value: 0.5558
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Tuesday.june.lm) }\CommentTok{# p = 0.9921 DO NOT REJECT NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = temperature_C ~ year4, data = Tuesday.june)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -6.0339 -1.5343 -0.0279  1.9180  6.7676 
+## 
+## Coefficients:
+##               Estimate Std. Error t value Pr(>|t|)
+## (Intercept) 21.1373460 50.7897026   0.416    0.678
+## year4       -0.0002531  0.0254253  -0.010    0.992
+## 
+## Residual standard error: 2.621 on 80 degrees of freedom
+## Multiple R-squared:  1.239e-06,  Adjusted R-squared:  -0.0125 
+## F-statistic: 9.912e-05 on 1 and 80 DF,  p-value: 0.9921
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Tuesday.july.lm) }\CommentTok{# p = 0.05691 DO NOT REJECT NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = temperature_C ~ year4, data = Tuesday.july)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.0561 -1.3275 -0.2047  1.4031  4.2161 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)  
+## (Intercept) -49.18776   37.36614  -1.316   0.1916  
+## year4         0.03612    0.01871   1.931   0.0569 .
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 1.953 on 84 degrees of freedom
+##   (1 observation deleted due to missingness)
+## Multiple R-squared:  0.04248,    Adjusted R-squared:  0.03109 
+## F-statistic: 3.727 on 1 and 84 DF,  p-value: 0.05691
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(Tuesday.aug.lm) }\CommentTok{# p = 0.1547 DO NOT REJECT NULL}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Call:
+## lm(formula = temperature_C ~ year4, data = Tuesday.aug)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -4.9656 -1.1055 -0.0787  1.2820  3.8677 
+## 
+## Coefficients:
+##              Estimate Std. Error t value Pr(>|t|)
+## (Intercept) -37.70343   41.36954  -0.911    0.365
+## year4         0.02976    0.02072   1.436    0.155
+## 
+## Residual standard error: 2.025 on 81 degrees of freedom
+## Multiple R-squared:  0.02484,    Adjusted R-squared:  0.0128 
+## F-statistic: 2.063 on 1 and 81 DF,  p-value: 0.1547
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\tightlist
+\item
+  How do your results compare to those we found in class for Paul Lake?
+  Do similar trends exist for both lakes?
+\end{enumerate}
+
+\begin{quote}
+For Paul Lake, we found that there were significant change in surface
+temperatures for July and August only for the time span reflected in the
+data. However, Tuesday Lake does not have any significant changes in
+surface temperatures.
+\end{quote}
+
+
+\end{document}
