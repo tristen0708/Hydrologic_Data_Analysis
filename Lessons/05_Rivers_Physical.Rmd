@@ -16,6 +16,13 @@ editor_options:
 ## Opening Discussion
 What are the physical properties of streams and rivers? What variables might be of interest?
 
+-Discharge (volume / time)
+-Velocity (distance / time)
+-Temperature
+-Bed material --> erosion --> turbidity
+-Mixing --> turbulent & laminar flow
+-Slope
+
 ## Session Set Up
 
 ```{r, message = FALSE}
@@ -78,15 +85,15 @@ What data are available from the sites? Pay particular attention to the paramete
 
 What is the period of record for mean daily discharge at each of these sites?
 
-> Eno River: 
+> Eno River: 1928 - 2019
 
-> Verde River: 
+> Verde River: 1915 - 2019
 
-> Bitterroot River: 
+> Bitterroot River: 1937 - 2019
 
-> Sauk River: 
+> Sauk River: 1909 - 2019
 
-> Nehalem River: 
+> Nehalem River: 2001 - 2019
 
 The function `readNWISdv` allows us to access daily hydrologic data, which include discharge, gage height, temperature, precipitation, and pH. The function `readNWISqw` allows us to access water quality data. 
 
@@ -196,6 +203,9 @@ CombinedPlot <-
   plot_grid(EnoPlot, VerdePlot, BitterrootPlot, SaukPlot, NehalemPlot, 
             ncol = 1)
 print(CombinedPlot)
+
+#could've also done rbind
+
 ```
 
 How does the magnitude of discharge compare for these rivers?
@@ -204,7 +214,7 @@ How does the magnitude of discharge compare for these rivers?
 
 Which of these rivers have a seasonal cycle of discharge? How might you explain the presence and timing of seasonal cycles based on climatic conditions?
 
->
+> 
 
 Hypothetical question: If you wanted to create a ggplot using facets instead of `plot_grid`, how would you go about wrangling your dataset differently? 
 
@@ -236,6 +246,33 @@ BitterrootPatternPlot <-
   geom_line(aes(y = Min.Discharge), color = "gray") +  
   labs(x = "Day of Year", y = expression("Discharge (ft"^3*"/s)")) 
 print(BitterrootPatternPlot)
+
+
+#Let's take a look at the Eno River for some reason
+EnoDischarge.Historical <- readNWISdv(siteNumbers = "02096500",
+                     parameterCd = "00060", # discharge (ft3/s)
+                     startDate = "1969-09-01",
+                     endDate = "2019-08-31")
+
+names(EnoDischarge.Historical)[4:5] <- c("Discharge", "Approval.Code")
+
+EnoDischarge.Historical <- mutate(EnoDischarge.Historical, 
+                                         DOY = yday(Date))
+
+EnoDischarge.Pattern <- EnoDischarge.Historical %>%
+  group_by(DOY) %>%
+  summarise(Median.Discharge = median(Discharge), 
+            Max.Discharge = max(Discharge),
+            Min.Discharge = min(Discharge))
+
+EnoPatternPlot <- 
+  ggplot(EnoDischarge.Pattern, aes(x = DOY)) +
+  geom_line(aes(y = Median.Discharge)) +
+  geom_line(aes(y = Max.Discharge), color = "gray") +
+  geom_line(aes(y = Min.Discharge), color = "gray") +  
+  labs(x = "Day of Year", y = expression("Discharge (ft"^3*"/s)")) 
+print(EnoPatternPlot)
+
 ```
 
 Challenge: Edit the code above so that rather than plotting the minimum and maximum discharge, you are plotting the 95 % confidence interval of the discharge on a given date. Hint: look up the formula for confidence interval.
