@@ -137,11 +137,11 @@ Eno.RImodel$coefficients[1] + Eno.RImodel$coefficients[2]*log(500)
 
 What differences did you see for the recurrence intervals built under different periods of record? How would your prediction of flood events differ if you were to use these models for forecasting purposes? 
 
->
+> The 30yr model underestimated the amount of discharge for high recurrance interval event
 
 What would you recommend for a watershed manager seeking to build the most accurate recurrence interval model for the Eno River?
 
-> 
+> use past years - most recent. but stationarity is dead anyways. 
 
 
 ### Examining the effects of urbanization on discharge
@@ -164,6 +164,56 @@ SaladoPlot <-
 print(SaladoPlot)
 
 # add more code here: 
+SaladoDischarge <- 
+  SaladoDischarge %>%
+  mutate(Year = year(Date))
+
+SaladoRecurrence.first <- 
+  SaladoDischarge %>%
+  filter(Year < 1990) %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>% 
+  mutate(Rank = rank(-PeakDischarge), 
+         RecurrenceInterval = (length(Year) + 1)/Rank, 
+         Probability = 1/RecurrenceInterval)
+
+SaladoRecurrence.last <- 
+  SaladoDischarge %>%
+  filter(Year > 1986) %>%
+  group_by(Year) %>%
+  summarise(PeakDischarge = max(Discharge)) %>% 
+  mutate(Rank = rank(-PeakDischarge), 
+         RecurrenceInterval = (length(Year) + 1)/Rank, 
+         Probability = 1/RecurrenceInterval)
+
+SaladoRecurrencePlot.Full <- 
+  ggplot(SaladoRecurrence.first, aes(x = RecurrenceInterval, y = PeakDischarge)) +
+  geom_point() +
+  geom_point(data = SaladoRecurrence.last, color = "#02818a",
+             aes(x = RecurrenceInterval, y = PeakDischarge))
+print(SaladoRecurrencePlot.Full)
+
+#running both models
+Salado.RImodel.first <- lm(data = SaladoRecurrence.first, PeakDischarge ~ log(RecurrenceInterval))
+summary(Salado.RImodel.first)
+
+Salado.RImodel.last <- lm(data = SaladoRecurrence.last, PeakDischarge ~ log(RecurrenceInterval))
+summary(Salado.RImodel.last)
+
+#Getting coefficients
+Salado.RImodel.first$coefficients #-273, 1489
+Salado.RImodel.last$coefficients #-1005, 3412
+
+#100 year interval
+Salado.RImodel.first$coefficients[1] + Salado.RImodel.first$coefficients[2]*log(100)
+
+Salado.RImodel.last$coefficients[1] + Salado.RImodel.last$coefficients[2]*log(100)
+
+#500 year interval
+Salado.RImodel.first$coefficients[1] + Salado.RImodel.first$coefficients[2]*log(500)
+
+Salado.RImodel.last$coefficients[1] + Salado.RImodel.last$coefficients[2]*log(500)
+
 
 ```
 
