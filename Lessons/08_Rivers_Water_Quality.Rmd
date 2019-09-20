@@ -45,15 +45,15 @@ Bacteria is present in almost every stream on earth. Most bacteria are harmless,
 
 Why might it be helpful to have multiple ways to measure bacteria?
 
->
+> To cross-check actual presence
 
 Where and when do you think the biggest risks from harmful bacteria are?
 
->
+> Illness
 
 Measuring microbiogial indicators is more expensive and time consuming than some other water quality metrics. Where and when would you measure these?
 
->
+> Downstream from WWTP, in areas that people use for drinking water/swimming
 
 ## How have improvements in sewage treatment affected water quality?
 
@@ -93,12 +93,12 @@ microb.dat <- dat.raw %>%
 begin.date <- min(microb.dat$Date)
 end.date <- max(microb.dat$Date)
 
+#Graph
 Total.coli.plot <- ggplot(microb.dat, aes(x = Date)) +
   geom_line(aes(y = Total.coli)) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", y = "Total coliforms (cfu / 100 ml)") +
   theme(legend.position = "top")
-
 print(Total.coli.plot)
 
 
@@ -107,7 +107,6 @@ F.coli.45.plot <- ggplot(microb.dat, aes(x = Date)) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", 
        y = expression("Fecal coliforms filtered to 0.45 " * mu *m *  " (cfu / 100 ml)")) 
-
 print(F.coli.45.plot)
 
 F.coli.7.plot <- ggplot(microb.dat, aes(x = Date)) +
@@ -115,7 +114,6 @@ F.coli.7.plot <- ggplot(microb.dat, aes(x = Date)) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", 
        y = expression("Fecal coliforms filtered to 0.7 " * mu *m *  " (cfu / 100 ml)")) 
-
 print(F.coli.7.plot)
 
 F.strep.strep.plot <- ggplot(microb.dat, aes(x = Date)) +
@@ -123,7 +121,6 @@ F.strep.strep.plot <- ggplot(microb.dat, aes(x = Date)) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", 
        y = "Fecal streptocci, KF streptococcus (cfu / 100 ml)") 
-
 print(F.strep.strep.plot)
 
 F.strep.ente.plot <- ggplot(microb.dat, aes(x = Date)) +
@@ -131,14 +128,12 @@ F.strep.ente.plot <- ggplot(microb.dat, aes(x = Date)) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", 
        y = "Fecal streptocci, m-Enterococcus (cfu / 100 ml)") 
-
 print(F.strep.ente.plot)
 
 Total.cell.plot <- ggplot(microb.dat, aes(x = Date)) +
   geom_line(aes(y = Total.cell), show.legend = FALSE) +
   lims(x = c(begin.date, end.date)) +
   labs(x = "", y = expression("Total cell count (# ml"^-1*")")) 
-
 print(Total.cell.plot)
 
 Microbes.plot <- plot_grid(Total.coli.plot +
@@ -155,9 +150,10 @@ Microbes.plot <- plot_grid(Total.coli.plot +
                                   y = ""), 
                            Total.cell.plot + 
                              labs(title = "Total cell count", y = ""),
-                           ncol = 1)
-
+                           ncol = 1) +
+  theme(plot.title = element_text(size = 2, face = "bold"))
 print(Microbes.plot)
+
 ```
 
 How would you use all of this data to talk about changes in microbial water quality from 1970 to 2000? What are the challenges?
@@ -195,8 +191,92 @@ coli.seasons <- ggplot(coli.monthly.summaries, aes(x = month)) +
   scale_x_continuous(name = "Month",
                      breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
     labs(y = "Total coliforms (cfu / 100 ml)") 
-
 print(coli.seasons)
+
+#Trying with different bacteria
+
+coli7.sum <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.coli.7) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+coli.seasons.7 <- ggplot(coli7.sum, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "Fecal coliform 0.7 (cfu / 100 ml)") 
+print(coli.seasons.7)
+
+coli45.sum <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.coli.45) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+coli.seasons.45 <- ggplot(coli45.sum, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "Fecal coliform 0.45 (cfu / 100 ml)") 
+print(coli.seasons.45)
+
+
+coli.strep.sum <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.strep.strep) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+coli.seasons.strep <- ggplot(coli.strep.sum, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "Fecal strep.strep (cfu / 100 ml)") 
+print(coli.seasons.strep)
+
+coli.ente <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, F.strep.ente) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+coli.seasons.ente <- ggplot(coli.ente, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "Fecal strep. ente(cfu / 100 ml)") 
+print(coli.seasons.ente)
+
+coli.totalcell <- microb.dat %>%
+  mutate(month = month(Date)) %>%
+  group_by(month) %>%
+  select(month, Total.cell) %>%
+  summarize_all(funs(Median = median(., na.rm = T),
+                 quant25 = quantile(., .25, na.rm = T),
+                 quant75 = quantile(., .75, na.rm = T)))
+
+coli.seasons.totalcell <- ggplot(coli.totalcell, aes(x = month)) +
+  geom_ribbon(aes(ymin = quant25, ymax = quant75), alpha = 0.3) +
+  geom_line(aes(y = Median)) +
+  scale_x_continuous(name = "Month",
+                     breaks = c(1,2,3,4,5,6,7,8,9,10,11,12)) +
+    labs(y = "Total cell density (cfu / 100 ml)") 
+print(coli.seasons.totalcell)
+
+
 ```
 
 When are total coliform concentrations highest? Why might this be?
@@ -232,6 +312,7 @@ discharge.dat <- discharge.raw %>%
 ggplot(discharge.dat, aes(x = Date, y = Discharge_cfs)) +
   geom_line() +
   labs(y = "Discharge (cfs)", x = "Date")
+
 ```
 
 We will use an interactive plotting function, dygraphs to look at the discharge data and microbial data overlain on each other. Let's look first at Total Coliform.
