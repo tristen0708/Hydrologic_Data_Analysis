@@ -28,6 +28,16 @@ The completed exercise is due on 25 September 2019 at 9:00 am.
 
 ```{r setup}
 
+getwd()
+
+library(tidyverse)
+library(dataRetrieval)
+library(cowplot)
+library(xts)
+library(dygraphs)
+
+theme_set(theme_classic())
+
 ```
 
 ## Hypoxia
@@ -39,17 +49,34 @@ This assignment will look at another measure of water quality - oxygen concentra
 
 ```{r read_data}
 
+parameters <- parameterCdFile
+
+dat.raw <- readNWISqw(siteNumbers = "02097314", #New Hope Creek at Blands 
+                     parameterCd = c("00300"), 
+                     startDate = "",
+                     endDate = "")
+
+O2.dat <- dat.raw %>%
+  select(Date = sample_dt,
+         Value = result_va) 
+
 ```
 
 5. Create a ggplot of oxygen concentrations over time. Include a horizonal line at 2 mg/l to show the hypoxia cutoff. 
 
 ```{r}
 
+O2_timeseries <- ggplot(O2.dat, aes(x = Date, y = Value)) +
+  geom_point() +
+  geom_hline(yintercept=2, color = "red", alpha = 0.8, lwd = 1, lty = 2)
+print(O2_timeseries)
+
 ```
 
-6. What do you notice about the frequency of hypoxia overtime?
+6. What do you notice about the frequency of hypoxia over time?
 
-> 
+> Hypoxia only seemed to be an issue in the 1980s. After 1984 until the present there are no O2 sample values that indicate hypoxia is a problem in New Hope Creek at Blands. In general, the value of O2 has slightly decreased over the time series but has not resulted in hypoxic conditions (O2 < 2 mg/L).
+
 
 ## Nutrients
 
@@ -58,11 +85,32 @@ This assignment will look at another measure of water quality - oxygen concentra
 
 ```{r read_nutrients}
 
+nutrients.dat.raw <- readNWISqw(siteNumbers = "02097314", #New Hope Creek at Blands 
+                     parameterCd = c("00600", "00665"), 
+                     startDate = "",
+                     endDate = "")
+
+nutrients.dat <- nutrients.dat.raw %>%
+  select(Date = sample_dt,
+         Parameter = parm_cd,
+         Value = result_va) %>%
+  mutate(id=1:n()) %>%
+  spread(Parameter, Value) %>%
+  select(-id) %>%
+  rename(TotalNitrogen_mgl_N = '00600', TotalPhosphorus_mgl_P = '00665')
+
 ```
 
 8. Create two ggplots stacked with cowplot that show nutrient concentrations over time.
 
 ```{r nutrient.plots)}
+
+TN.plot <- ggplot(nutrients.dat, aes(x = Date, y = TotalNitrogen_mgl_N)) +
+  geom_line() +
+  #scale_color_manual(values = c("steelblue4", "darkorange4")) +
+  ggtitle("Total Nitrogen, 1982-2018")
+print(TN.plot)
+
 
 ```
 
