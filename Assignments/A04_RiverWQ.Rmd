@@ -51,7 +51,7 @@ This assignment will look at another measure of water quality - oxygen concentra
 
 parameters <- parameterCdFile
 
-dat.raw <- readNWISqw(siteNumbers = "02097314", #New Hope Creek at Blands 
+O2.raw <- readNWISqw(siteNumbers = "02097314", #New Hope Creek at Blands 
                      parameterCd = c("00300"), 
                      startDate = "",
                      endDate = "")
@@ -105,18 +105,25 @@ nutrients.dat <- nutrients.dat.raw %>%
 
 ```{r nutrient.plots)}
 
-TN.plot <- ggplot(nutrients.dat, aes(x = Date, y = TotalNitrogen_mgl_N)) +
-  geom_line() +
+TN.plot <- ggplot(nutrients.dat) +
+  geom_point(aes(x = Date, y = TotalNitrogen_mgl_N)) +
   #scale_color_manual(values = c("steelblue4", "darkorange4")) +
   ggtitle("Total Nitrogen, 1982-2018")
 print(TN.plot)
 
+TP.plot <- ggplot(nutrients.dat) +
+  geom_point(aes(x = Date, y = TotalPhosphorus_mgl_P)) +
+  #scale_color_manual(values = c("steelblue4", "darkorange4")) +
+  ggtitle("Total Phosphorus, 1982-2018")
+print(TP.plot)
+
+plot_grid(TN.plot, TP.plot, label_size = 12)
 
 ```
 
 9. What do these plots tell you about nutrient concentrations over time? How might this relate to your previous plot of hypoxia events?
 
-> 
+> Nutrient concentrations were extremely high in the 1980s and sharpy decreased from around ~1985 to the present. This makes sense based on the previous hypoxia events that occured in the early to mid 1980s, since high nutrient concetrations were observed during that time as well.
 
 ## Discharge and Temperature
 
@@ -124,24 +131,49 @@ print(TN.plot)
 
 ```{r bring_discharge}
 
+parameters <- parameterCdFile
+
+discharge.raw <- readNWISdv(siteNumbers = "02097314", #New Hope Creek
+                     parameterCd = c("00060"), 
+                     startDate = "",
+                     endDate = "")
+
+discharge.dat <- discharge.raw %>%
+  select(Agency = agency_cd,
+         SiteCode = site_no,
+         Date = Date, 
+         Discharge.cfs = X_00060_00003, 
+         ApprovalCode = X_00060_00003_cd) 
+
 ```
 
 11. Create a dygraph of discharge and oxygen concentrations. You should have discharge on the y axis and oxygen concentration on the y2 axis. Set your y-axes limits so that they don't change as you zoom in and out. (hint: use `dyAxis(..., valueRange = c(0, 6500))` for discharge & `dyAxis(..., valueRange = c(0, 13))` for oxygen).
 ```{r}
 
+O2 <- with(O2.dat, xts(x = Value, order.by = Date))
+Discharge <- with(discharge.dat, xts(x = Discharge.cfs, order.by = Date))
+
+DyDat <- cbind(O2, Discharge)
+
+dygraph(DyDat) %>% 
+  dySeries("O2", axis = "y2") %>% 
+  dyAxis(name = "y", label = "Discharge (cfs)", valueRange = c(0, 6500)) %>%
+  dyAxis(name = "y2", label = "Total O2 (cfu per 100 ml)", valueRange = c(0, 13)) %>%
+  dyRangeSelector()
+
 ```
 
 12. Do hypoxic events happen in the wet or the dry season? How many days after storm events (of at least 100 cfs) do they occur? 
 
-> 
+> It appears the hypoxic events are happening in the dry season (August-October). They seem to occur approximately 75-85 days after the most recent storm event (of at least 100 cfs).
 
 13. Temperature also impacts the solubility of oxygen in water. More oxygen can dissolve when temperatures are *lower*. How would you analyze the effects of temperature on dissolved oxygen concentrations? What data would you need? How would you separate the effects of temperature from the effects of flow?
 
-> 
+> Though the hypoxic events occur during the summer months when temperatures are likely much higher, we see across the time series (when nutrient concentrations are much lower) that dissolved oxygen levels are much higher than the hypoxic value. 
 
 14. What do you think is the biggest driver of hypoxia in New Hope Creek? What data do you use to support your conclusion?
 
-> 
+> This leads us to think that the primary driver behind the hypoxic events are far more related to nutrient concentration and discharge rather than temperature.
 
 ## Reflection
 15. What are 2-3 conclusions or summary points about river water quality you learned through your analysis?
