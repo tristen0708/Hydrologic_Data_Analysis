@@ -1,6 +1,6 @@
 ---
 title: "Assignment 4: Water Quality in Rivers"
-author: "Student Name"
+author: "Tristen Townsend"
 output: html_document
 geometry: margin=2.54cm
 editor_options: 
@@ -56,7 +56,7 @@ O2.raw <- readNWISqw(siteNumbers = "02097314", #New Hope Creek at Blands
                      startDate = "",
                      endDate = "")
 
-O2.dat <- dat.raw %>%
+O2.dat <- O2.raw %>%
   select(Date = sample_dt,
          Value = result_va) 
 
@@ -173,21 +173,23 @@ dygraph(DyDat) %>%
 
 14. What do you think is the biggest driver of hypoxia in New Hope Creek? What data do you use to support your conclusion?
 
-> This leads us to think that the primary driver behind the hypoxic events are far more related to nutrient concentration and discharge rather than temperature.
+> I think the primary driver behind the hypoxic events are is high nutrient concentration. The nutrient vs time and O2 vs time graphs show that there is a strong correlation between when nutrient concentrations are high and when hypoxic events occur. 
 
 ## Reflection
 15. What are 2-3 conclusions or summary points about river water quality you learned through your analysis?
 
->
+> Nutrients can greatly influence if and when hypoxic events occur.
+> Temperature (summer seasonality) does not play as much of a role in the occurence of hypoxic events as nutrient concentrations do.
 
 16. What data, visualizations, and/or models supported your conclusions from 15?
 
-> 
+> The data visualizations of nutrients and O2 vs time graphs help illustrate the relationship between nutrients and hypoxia events. 
+>The dygraph allows to to see very clearly during each season across the time series what O2 levels were. This indicates that high temperatures are far less likely to be a driver for hypoxic events in New Hope Creek.
 
 17. Did hands-on data analysis impact your learning about water quality relative to a theory-based lesson? If so, how?
 
->
+> Yes, it allows for the opportunity to practice and pull out actual trends based on theory.
 
 18.	How did the real-world data compare with your expectations from theory?
 
->
+> They matched with my expectations mostly, just using real world data shows us how it doesn't always match exactly.
