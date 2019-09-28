@@ -195,11 +195,12 @@ chlvstp <- ggplot(LAGOStrophic, aes(x = TSI.chl, y = TSI.tp)) +
   scale_x_continuous(limits = c(0, 100)) +
   geom_abline(slope = 1, intercept = 0)  
 print(chlvstp)
+
 ```
 
 What is the observed relationship, and how does it depart from the 1:1 relationship? What do values above or below the 1:1 line tell us about the conditions present in a lake?
 
-> 
+> When the values are below the line it means the variable on the x-axis is influencing the conditions in the lake more
 
 ### Comparing TSI across states
 Here are three different ways to envision TSI across the states in the LAGOS-NE database. 
@@ -216,18 +217,18 @@ stateTSIbar <- ggplot(LAGOStrophic, aes(x = state, fill = trophic.class)) +
 print(stateTSIbar)
   
 stateTSIjitter <- ggplot(LAGOStrophic, aes(x = state, y = TSI.chl, color = season)) +
-  geom_rect(xmin = -1, xmax = 19, ymin = 0, ymax = 40,
-            fill = "gray90", color = "gray90") +
-  geom_rect(xmin = -1, xmax = 19, ymin = 40, ymax = 50,
-            fill = "gray80", color = "gray80") +
-  geom_rect(xmin = -1, xmax = 19, ymin = 50, ymax = 70,
-            fill = "gray70", color = "gray70") +
-  geom_rect(xmin = -1, xmax = 19, ymin = 70, ymax = 100,
-            fill = "gray60", color = "gray60") +
-  geom_jitter(alpha = 0.3) +
-  # geom_hline(yintercept = 40, lty = 2) +
-  # geom_hline(yintercept = 50, lty = 2) +
-  # geom_hline(yintercept = 70, lty = 2) +
+ #geom_rect(xmin = -1, xmax = 19, ymin = 0, ymax = 40,
+ #          fill = "gray90", color = "gray90") +
+ #geom_rect(xmin = -1, xmax = 19, ymin = 40, ymax = 50,
+ #          fill = "gray80", color = "gray80") +
+ #geom_rect(xmin = -1, xmax = 19, ymin = 50, ymax = 70,
+ #          fill = "gray70", color = "gray70") +
+ #geom_rect(xmin = -1, xmax = 19, ymin = 70, ymax = 100,
+ #          fill = "gray60", color = "gray60") +
+ geom_jitter(alpha = 0.3) +
+  geom_hline(yintercept = 40, lty = 2) +
+  geom_hline(yintercept = 50, lty = 2) +
+  geom_hline(yintercept = 70, lty = 2) +
   labs(x = "", y = "TSI(chl)") +
   scale_y_continuous(limits = c(0, 100)) +
   theme(legend.position = "top") +
@@ -237,11 +238,18 @@ print(stateTSIjitter)
 ```
 What insights do we gain from the different visualizations?
 
-> Violin: 
+> Violin: Range, Median, distribution of data, how much of that data lies where 
 
-> Bar: 
+> Bar:  
 
 > Jitter:
 
 ## Closing Discussion
 What factors might you expect to influence TSI scores in a given area? What are some variables in the LAGOSNE database that could help you test your hypothesis?
+
+```{r}
+
+write.csv(LAGOStrophic, "./Data/LAGOStrophic.csv", row.names = FALSE)
+
+```
+
