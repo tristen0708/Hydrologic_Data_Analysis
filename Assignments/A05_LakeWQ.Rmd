@@ -1,6 +1,6 @@
 ---
 title: "Assignment 5: Water Quality in Lakes"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,6 +29,18 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 
 ```{r setup}
 
+getwd()
+
+library(tidyverse)
+library(lubridate)
+library(LAGOSNE)
+
+theme_set(theme_classic())
+options(scipen = 100)
+
+load(file = "./Data/Raw/LAGOSdata.rda")
+LAGOStrophic <- read_csv(file = "./Data/trophic.20190927.csv")
+
 ```
 
 ## Trophic State Index
@@ -37,6 +49,32 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 
 ```{r}
 
+LAGOStrophic <- 
+  mutate(LAGOStrophic, 
+         TSI.chl = round(10*(6 - (2.04 - 0.68*log(chla)/log(2)))),
+         TSI.secchi = round(10*(6 - (log(secchi)/log(2)))), 
+         TSI.tp = round(10*(6 - (log(48/tp)/log(2)))), 
+         trophic.class.secchi = 
+            ifelse(TSI.secchi < 40, "Oligotrophic", 
+                   ifelse(TSI.secchi < 50, "Mesotrophic",
+                          ifelse(TSI.secchi < 70, "Eutrophic", "Hypereutrophic"))),
+         trophic.class.tp = 
+           ifelse(TSI.tp < 40, "Oligotrophic",
+                  ifelse(TSI.tp < 50, "Mesotrophic",
+                         ifelse(TSI.tp < 70, "Eutrophic", "Hypereutrophic"))))
+
+LAGOStrophic$trophic.class <- 
+  factor(LAGOStrophic$trophic.class,
+         levels = c("Oligotrophic", "Mesotrophic", "Eutrophic", "Hypereutrophic"))
+
+LAGOStrophic$trophic.class.secchi <- 
+  factor(LAGOStrophic$trophic.class.secchi,
+         levels = c("Oligotrophic", "Mesotrophic", "Eutrophic", "Hypereutrophic"))
+
+LAGOStrophic$trophic.class.tp <- 
+  factor(LAGOStrophic$trophic.class.tp,
+         levels = c("Oligotrophic", "Mesotrophic", "Eutrophic", "Hypereutrophic"))
+
 ```
 
 
@@ -44,17 +82,39 @@ The completed exercise is due on 2 October 2019 at 9:00 am.
 
 ```{r}
 
+count.class <- count(LAGOStrophic, trophic.class)
+count.secchi <- count(LAGOStrophic, trophic.class.secchi)
+count.tp <- count(LAGOStrophic, trophic.class.tp)
+
 ```
 
 7. What proportion of total observations are considered eutrohic or hypereutrophic according to the three different metrics (trophic.class, trophic.class.secchi, trophic.class.tp)?
 
 ```{r}
 
+#Trophic class - Chl.A
+#Eutrophic
+count.class[3,2]/sum(count.class$n) #0.559
+#Hypereutrophic
+count.class[4,2]/sum(count.class$n) #0.192
+
+#Trophic class - Secchi
+#Eutrophic
+count.secchi[3,2]/sum(count.secchi$n) #0.382
+#Hypereutrophic
+count.secchi[4,2]/sum(count.secchi$n) #0.068
+
+#Trophic class - TP
+#Eutrophic
+count.tp[3,2]/sum(count.tp$n) #0.331
+#Hypereutrophic
+count.tp[4,2]/sum(count.tp$n) #0.096
+
 ```
 
 Which of these metrics is most conservative in its designation of eutrophic conditions? Why might this be?
 
-> 
+> Total phosphorus - 
 
 Note: To take this further, a researcher might determine which trophic classes are susceptible to being differently categorized by the different metrics and whether certain metrics are prone to categorizing trophic class as more or less eutrophic. This would entail more complex code.
 
@@ -64,10 +124,33 @@ Note: To take this further, a researcher might determine which trophic classes a
 
 ```{r}
 
+LAGOSlocus <- LAGOSdata$locus
+LAGOSstate <- LAGOSdata$state
+LAGOSnutrient <- LAGOSdata$epi_nutr
+
+LAGOSlocus$lagoslakeid <- as.factor(LAGOSlocus$lagoslakeid)
+LAGOSnutrient$lagoslakeid <- as.factor(LAGOSnutrient$lagoslakeid)
+
+LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
+
+LAGOSNandP <- 
+  left_join(LAGOSnutrient, LAGOSlocations, by = "lagoslakeid") %>%
+  select(lagoslakeid, sampledate, tn, tp, state, state_name) %>%
+  mutate(sampleyear = year(sampledate), 
+         samplemonth = month(sampledate))
+
 ```
 
 9. Create two violin plots comparing TN and TP concentrations across states. Include a 50th percentile line inside the violins.
 ```{r}
+
+stateTNviolin <- ggplot(LAGOSNandP, aes(x = state, y = tn)) +
+  geom_violin(draw_quantiles = 0.50)
+print(stateTNviolin)
+
+stateTPviolin <- ggplot(LAGOSNandP, aes(x = state, y = tp)) +
+  geom_violin(draw_quantiles = 0.50)
+print(stateTPviolin)
 
 ```
 
@@ -87,6 +170,25 @@ Which states have the highest and lowest concentration ranges?
 
 ```{r}
 
+LAGOSNandP$state <- as.factor(LAGOSNandP$state)
+LAGOSNandP$state_name <- as.factor(LAGOSNandP$state_name)
+
+stateTNjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tn, color = samplemonth)) +
+  geom_jitter(alpha = 0.3) +
+  labs(x = "", y = "TSI(tn)") +
+  theme(legend.position = "top") +
+  scale_color_viridis_c(option = "magma") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(stateTNjitter)
+
+stateTPjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tp, color = samplemonth)) +
+ geom_jitter(alpha = 0.3) +
+  labs(x = "", y = "TSI(tp)") +
+  theme(legend.position = "top") +
+  scale_color_viridis_c(option = "magma")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(stateTPjitter)
+
 ```
 
 Which states have the most samples? How might this have impacted total ranges from #9?
@@ -104,6 +206,22 @@ Which months are sampled most extensively? Does this differ among states?
 11. Create two jitter plots comparing TN and TP concentrations across states, with sampleyear as the color. Choose a color palette other than the ggplot default.
 
 ```{r}
+
+stateTNjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tn, color = sampleyear)) +
+  geom_jitter(alpha = 0.3) +
+  labs(x = "", y = "TSI(tn)") +
+  theme(legend.position = "top") +
+  scale_color_viridis_c(option = "magma") +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(stateTNjitter)
+
+stateTPjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tp, color = sampleyear)) +
+ geom_jitter(alpha = 0.3) +
+  labs(x = "", y = "TSI(tp)") +
+  theme(legend.position = "top") +
+  scale_color_viridis_c(option = "magma")+
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
+print(stateTPjitter)
 
 ```
 
