@@ -55,7 +55,7 @@ In your group, look through the LAGOS-NE database and decide on 5 variables avai
 
 > Variable 4: Date
 
-> Variable 5: 
+> Variable 5: Buffer
 
 Wrangle LAGOSdata so that you have a new data frame that includes TN, TP, your five variables, and any other columns that would be useful for you (e.g., lake id numbers). Helpful functions may include `join`, `select`, `filter`, and `mutate`. Consider whether you want to use `drop_na` to retain complete cases of individual variables or entire rows.
 
@@ -75,14 +75,27 @@ LAGOSlocations <- left_join(LAGOSlocus, LAGOSstate, by = "state_zoneid")
 combined.lagos <- 
   left_join(LAGOSnutrient, LAGOSlocations, by = "lagoslakeid") %>%
   select(lagoslakeid,state, state, state_name, 
-         gnis_name, sampledate, chla, tp, secchi, 
-         toc, ) %>%
+         gnis_name, sampledate, chla, tp, tn, secchi, 
+         toc) %>%
   mutate(sampleyear = year(sampledate), 
          samplemonth = month(sampledate), 
          season = as.factor(quarter(sampledate, fiscal_start = 12))) %>%
-  drop_na(chla:secchi)
+  drop_na(chla:toc)
 
+LAGOSland$lagoslakeid <- as.factor(LAGOSland$lagoslakeid)
 
+full.lagos <- 
+  left_join(combined.lagos, LAGOSland, by = "lagoslakeid") %>%
+  select(lagoslakeid, state, state_name, gnis_name, sampledate,
+         season, chla, tp, tn, secchi, toc, buffer500m_nlcd1992_pct_81, 
+         buffer500m_nlcd1992_pct_82) 
+
+#levels(full.lagos$season) <- c("Winter", "Spring", "Summer", "Fall")
+
+colnames(full.lagos)[colnames(full.lagos)=="buffer500m_nlcd1992_pct_81"] <- "Pasture"
+colnames(full.lagos)[colnames(full.lagos)=="buffer500m_nlcd1992_pct_82"] <- "RowCrop"
+
+full.lagos <- full.lagos %>% mutate(CropPasture = rowSums(.[11:12]))
 
 ```
 
@@ -91,6 +104,11 @@ Examine potential correlations among your predictor variables. If your predictor
 1. Create a correlation plot for your 7 variables of interest (TN, TP, and the five predictor variables). What patterns do you see? (hint: function `corrplot` in the corrplot package. I like to use `upper = "ellipse"` inside the function).
 
 ```{r}
+
+corr.lagos <- full.lagos %>% select(chla, tp, tn, secchi, toc, CropPasture) %>% drop_na(chla:CropPasture)
+
+corr.x <- cor(corr.lagos)
+corrplot(corr.x, upper = "ellipse")
 
 ```
 

@@ -49,13 +49,16 @@ Time series datasets come with several caveats, which need to be addressed in or
 
 Today, we will analyze discharge data from Clear Creek in Colorado, USA. Let's first look at what types of data are available for this dataset. 
 ```{r}
+
 ClearCreekSummary <- whatNWISdata(siteNumbers = "06719505")
+
 ```
 Notice that mean daily discharge has been measured at this site since 1974, with over 16,000 measurements available. This will be a robust time series dataset for us to analyze changes that have occurred over the past 45 years. 
 
 Let's gather all the discharge data available from this site. Notice that `readNWISdv` gathers dates, which are already formatted as a date object. What do you notice about the data when plotted over time?
 
 ```{r}
+
 # Import data
 ClearCreekDischarge <- readNWISdv(siteNumbers = "06719505",
                      parameterCd = "00060", # discharge (ft3/s)
@@ -81,6 +84,7 @@ print(ClearCreekPlot)
 
 The simplest option to characterize a time series is a linear regression. 
 ```{r}
+
 ClearCreekRegressionPlot <- 
   ggplot(ClearCreekDischarge, aes(x = Date, y = Discharge)) +
   geom_line() +
@@ -89,16 +93,18 @@ ClearCreekRegressionPlot <-
   theme(plot.title = element_text(margin = margin(b = -10), size = 12), 
        axis.title.x = element_blank())
 print(ClearCreekRegressionPlot)
+
 ```
 
 Is a linear regression an appropriate model for the data in this case? Why or why not?
 
-> 
+> No! Because the data is seasonal/cyclical so highs and lows cancel
 
 Are there situations where it would be appropriate to use a linear regression to model a time series? If so, what is an example?
 
->
-
+> Regular time scale to get rid of seasonality
+> Don't use seasonal data
+> Decompose into annual means
 
 ## Decomposing a time series dataset
 
@@ -113,6 +119,7 @@ We first need to turn the discharge data into a time series object in R. This is
 
 Note: time series objects must be equispaced, which requires interpolation if the data have not been collected at regular intervals. In our case, we have daily data with no NAs in the data frame, so we don't need to worry about this.
 ```{r}
+
 ClearCreek_ts <- ts(ClearCreekDischarge[[4]], frequency = 365)
 
 ```
@@ -120,7 +127,9 @@ ClearCreek_ts <- ts(ClearCreekDischarge[[4]], frequency = 365)
 The `stl` function decomposes the time series object into its component parts. We must specify that the window for seasonal extraction is either "periodic" or a specific number of at least 7. The decomposition proceeds through a loess (locally estimated scatterplot smoothing) function.
 
 ```{r}
+
 ?stl
+
 # Generate the decomposition
 ClearCreek_Decomposed <- stl(ClearCreek_ts, s.window = "periodic")
 
