@@ -1,0 +1,773 @@
+\documentclass[]{article}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\usepackage{fixltx2e} % provides \textsubscript
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+\else % if luatex or xelatex
+  \ifxetex
+    \usepackage{mathspec}
+  \else
+    \usepackage{fontspec}
+  \fi
+  \defaultfontfeatures{Ligatures=TeX,Scale=MatchLowercase}
+\fi
+% use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+% use microtype if available
+\IfFileExists{microtype.sty}{%
+\usepackage{microtype}
+\UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\usepackage[margin=2.54cm]{geometry}
+\usepackage{hyperref}
+\hypersetup{unicode=true,
+            pdftitle={Assignment 5: Water Quality in Lakes},
+            pdfauthor={Tristen Townsend},
+            pdfborder={0 0 0},
+            breaklinks=true}
+\urlstyle{same}  % don't use monospace font for urls
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\IfFileExists{parskip.sty}{%
+\usepackage{parskip}
+}{% else
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 2pt minus 1pt}
+}
+\setlength{\emergencystretch}{3em}  % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{0}
+% Redefines (sub)paragraphs to behave more like sections
+\ifx\paragraph\undefined\else
+\let\oldparagraph\paragraph
+\renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+\fi
+\ifx\subparagraph\undefined\else
+\let\oldsubparagraph\subparagraph
+\renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+\fi
+
+%%% Use protect on footnotes to avoid problems with footnotes in titles
+\let\rmarkdownfootnote\footnote%
+\def\footnote{\protect\rmarkdownfootnote}
+
+%%% Change title format to be more compact
+\usepackage{titling}
+
+% Create subtitle command for use in maketitle
+\providecommand{\subtitle}[1]{
+  \posttitle{
+    \begin{center}\large#1\end{center}
+    }
+}
+
+\setlength{\droptitle}{-2em}
+
+  \title{Assignment 5: Water Quality in Lakes}
+    \pretitle{\vspace{\droptitle}\centering\huge}
+  \posttitle{\par}
+    \author{Tristen Townsend}
+    \preauthor{\centering\large\emph}
+  \postauthor{\par}
+    \date{}
+    \predate{}\postdate{}
+  
+
+\begin{document}
+\maketitle
+
+\hypertarget{overview}{%
+\subsection{OVERVIEW}\label{overview}}
+
+This exercise accompanies the lessons in Hydrologic Data Analysis on
+water quality in lakes
+
+\hypertarget{directions}{%
+\subsection{Directions}\label{directions}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Change ``Student Name'' on line 3 (above) with your name.
+\item
+  Work through the steps, \textbf{creating code and output} that fulfill
+  each instruction.
+\item
+  Be sure to \textbf{answer the questions} in this assignment document.
+\item
+  When you have completed the assignment, \textbf{Knit} the text and
+  code into a single HTML file.
+\item
+  After Knitting, submit the completed exercise (HTML file) to the
+  dropbox in Sakai. Add your last name into the file name (e.g.,
+  ``A05\_Salk.html'') prior to submission.
+\end{enumerate}
+
+The completed exercise is due on 2 October 2019 at 9:00 am.
+
+\hypertarget{setup}{%
+\subsection{Setup}\label{setup}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Verify your working directory is set to the R project file,
+\item
+  Load the tidyverse, lubridate, and LAGOSNE packages.
+\item
+  Set your ggplot theme (can be theme\_classic or something else)
+\item
+  Load the LAGOSdata database and the trophic state index csv file we
+  created on 2019/09/27.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{getwd}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "/Users/Tristen/OneDrive - Duke University/Fall 2019/Hydrologic Data Analysis/Hydrologic_Data_Analysis"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ------------------------------------- tidyverse 1.2.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v ggplot2 3.2.1     v purrr   0.3.2
+## v tibble  2.1.3     v dplyr   0.8.3
+## v tidyr   0.8.3     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.4.0
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ---------------------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(lubridate)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'lubridate'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:base':
+## 
+##     date
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(LAGOSNE)}
+
+\KeywordTok{theme_set}\NormalTok{(}\KeywordTok{theme_classic}\NormalTok{())}
+\KeywordTok{options}\NormalTok{(}\DataTypeTok{scipen =} \DecValTok{100}\NormalTok{)}
+
+\KeywordTok{load}\NormalTok{(}\DataTypeTok{file =} \StringTok{"./Data/Raw/LAGOSdata.rda"}\NormalTok{)}
+\NormalTok{LAGOStrophic <-}\StringTok{ }\KeywordTok{read_csv}\NormalTok{(}\DataTypeTok{file =} \StringTok{"./Data/LAGOStrophic.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Parsed with column specification:
+## cols(
+##   lagoslakeid = col_double(),
+##   sampledate = col_date(format = ""),
+##   chla = col_double(),
+##   tp = col_double(),
+##   secchi = col_double(),
+##   gnis_name = col_character(),
+##   lake_area_ha = col_double(),
+##   state = col_character(),
+##   state_name = col_character(),
+##   sampleyear = col_double(),
+##   samplemonth = col_double(),
+##   season = col_character(),
+##   TSI.chl = col_double(),
+##   TSI.secchi = col_double(),
+##   TSI.tp = col_double(),
+##   trophic.class = col_character()
+## )
+\end{verbatim}
+
+\hypertarget{trophic-state-index}{%
+\subsection{Trophic State Index}\label{trophic-state-index}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{4}
+\tightlist
+\item
+  Similar to the trophic.class column we created in class (determined
+  from TSI.chl values), create two additional columns in the data frame
+  that determine trophic class from TSI.secchi and TSI.tp (call these
+  trophic.class.secchi and trophic.class.tp).
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LAGOStrophic <-}\StringTok{ }
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(LAGOStrophic, }
+         \DataTypeTok{TSI.chl =} \KeywordTok{round}\NormalTok{(}\DecValTok{10}\OperatorTok{*}\NormalTok{(}\DecValTok{6} \OperatorTok{-}\StringTok{ }\NormalTok{(}\FloatTok{2.04} \OperatorTok{-}\StringTok{ }\FloatTok{0.68}\OperatorTok{*}\KeywordTok{log}\NormalTok{(chla)}\OperatorTok{/}\KeywordTok{log}\NormalTok{(}\DecValTok{2}\NormalTok{)))),}
+         \DataTypeTok{TSI.secchi =} \KeywordTok{round}\NormalTok{(}\DecValTok{10}\OperatorTok{*}\NormalTok{(}\DecValTok{6} \OperatorTok{-}\StringTok{ }\NormalTok{(}\KeywordTok{log}\NormalTok{(secchi)}\OperatorTok{/}\KeywordTok{log}\NormalTok{(}\DecValTok{2}\NormalTok{)))), }
+         \DataTypeTok{TSI.tp =} \KeywordTok{round}\NormalTok{(}\DecValTok{10}\OperatorTok{*}\NormalTok{(}\DecValTok{6} \OperatorTok{-}\StringTok{ }\NormalTok{(}\KeywordTok{log}\NormalTok{(}\DecValTok{48}\OperatorTok{/}\NormalTok{tp)}\OperatorTok{/}\KeywordTok{log}\NormalTok{(}\DecValTok{2}\NormalTok{)))), }
+         \DataTypeTok{trophic.class.secchi =} 
+            \KeywordTok{ifelse}\NormalTok{(TSI.secchi }\OperatorTok{<}\StringTok{ }\DecValTok{40}\NormalTok{, }\StringTok{"Oligotrophic"}\NormalTok{, }
+                   \KeywordTok{ifelse}\NormalTok{(TSI.secchi }\OperatorTok{<}\StringTok{ }\DecValTok{50}\NormalTok{, }\StringTok{"Mesotrophic"}\NormalTok{,}
+                          \KeywordTok{ifelse}\NormalTok{(TSI.secchi }\OperatorTok{<}\StringTok{ }\DecValTok{70}\NormalTok{, }\StringTok{"Eutrophic"}\NormalTok{, }\StringTok{"Hypereutrophic"}\NormalTok{))),}
+         \DataTypeTok{trophic.class.tp =} 
+           \KeywordTok{ifelse}\NormalTok{(TSI.tp }\OperatorTok{<}\StringTok{ }\DecValTok{40}\NormalTok{, }\StringTok{"Oligotrophic"}\NormalTok{,}
+                  \KeywordTok{ifelse}\NormalTok{(TSI.tp }\OperatorTok{<}\StringTok{ }\DecValTok{50}\NormalTok{, }\StringTok{"Mesotrophic"}\NormalTok{,}
+                         \KeywordTok{ifelse}\NormalTok{(TSI.tp }\OperatorTok{<}\StringTok{ }\DecValTok{70}\NormalTok{, }\StringTok{"Eutrophic"}\NormalTok{, }\StringTok{"Hypereutrophic"}\NormalTok{))))}
+
+\NormalTok{LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class <-}\StringTok{ }
+\StringTok{  }\KeywordTok{factor}\NormalTok{(LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class,}
+         \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Oligotrophic"}\NormalTok{, }\StringTok{"Mesotrophic"}\NormalTok{, }\StringTok{"Eutrophic"}\NormalTok{, }\StringTok{"Hypereutrophic"}\NormalTok{))}
+
+\NormalTok{LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class.secchi <-}\StringTok{ }
+\StringTok{  }\KeywordTok{factor}\NormalTok{(LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class.secchi,}
+         \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Oligotrophic"}\NormalTok{, }\StringTok{"Mesotrophic"}\NormalTok{, }\StringTok{"Eutrophic"}\NormalTok{, }\StringTok{"Hypereutrophic"}\NormalTok{))}
+
+\NormalTok{LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class.tp <-}\StringTok{ }
+\StringTok{  }\KeywordTok{factor}\NormalTok{(LAGOStrophic}\OperatorTok{$}\NormalTok{trophic.class.tp,}
+         \DataTypeTok{levels =} \KeywordTok{c}\NormalTok{(}\StringTok{"Oligotrophic"}\NormalTok{, }\StringTok{"Mesotrophic"}\NormalTok{, }\StringTok{"Eutrophic"}\NormalTok{, }\StringTok{"Hypereutrophic"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  How many observations fall into the four trophic state categories for
+  the three metrics (trophic.class, trophic.class.secchi,
+  trophic.class.tp)? Hint: \texttt{count} function.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{count.class <-}\StringTok{ }\KeywordTok{count}\NormalTok{(LAGOStrophic, trophic.class)}
+\NormalTok{count.secchi <-}\StringTok{ }\KeywordTok{count}\NormalTok{(LAGOStrophic, trophic.class.secchi)}
+\NormalTok{count.tp <-}\StringTok{ }\KeywordTok{count}\NormalTok{(LAGOStrophic, trophic.class.tp)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  What proportion of total observations are considered eutrohic or
+  hypereutrophic according to the three different metrics
+  (trophic.class, trophic.class.secchi, trophic.class.tp)?
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Trophic class - Chl.A}
+\CommentTok{#Eutrophic}
+\NormalTok{count.class[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.class}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.559}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           n
+## 1 0.5585116
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Hypereutrophic}
+\NormalTok{count.class[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.class}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.192}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           n
+## 1 0.1918453
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Trophic class - Secchi}
+\CommentTok{#Eutrophic}
+\NormalTok{count.secchi[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.secchi}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.382}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           n
+## 1 0.3823698
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Hypereutrophic}
+\NormalTok{count.secchi[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.secchi}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.068}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            n
+## 1 0.06803111
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Trophic class - TP}
+\CommentTok{#Eutrophic}
+\NormalTok{count.tp[}\DecValTok{3}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.tp}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.331}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##           n
+## 1 0.3314032
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{#Hypereutrophic}
+\NormalTok{count.tp[}\DecValTok{4}\NormalTok{,}\DecValTok{2}\NormalTok{]}\OperatorTok{/}\KeywordTok{sum}\NormalTok{(count.tp}\OperatorTok{$}\NormalTok{n) }\CommentTok{#0.096}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##            n
+## 1 0.09643634
+\end{verbatim}
+
+Which of these metrics is most conservative in its designation of
+eutrophic conditions? Why might this be?
+
+\begin{quote}
+Total phosphorus. This is likely because there are more things that
+could influence the other two variables. For secchi depth, it can be
+affected by things such as dissolved organics or sediments in the water.
+And chorophyll-a has more things that can influence it's values that do
+not affect total phosphorus concentrations (for example, nitrogen would
+might increase chlorophyll-a but not total phosphorus).
+\end{quote}
+
+Note: To take this further, a researcher might determine which trophic
+classes are susceptible to being differently categorized by the
+different metrics and whether certain metrics are prone to categorizing
+trophic class as more or less eutrophic. This would entail more complex
+code.
+
+\hypertarget{nutrient-concentrations}{%
+\subsection{Nutrient Concentrations}\label{nutrient-concentrations}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{7}
+\tightlist
+\item
+  Create a data frame that includes the columns lagoslakeid, sampledate,
+  tn, tp, state, and state\_name. Mutate this data frame to include
+  sampleyear and samplemonth columns as well. Call this data frame
+  LAGOSNandP.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LAGOSlocus <-}\StringTok{ }\NormalTok{LAGOSdata}\OperatorTok{$}\NormalTok{locus}
+\NormalTok{LAGOSstate <-}\StringTok{ }\NormalTok{LAGOSdata}\OperatorTok{$}\NormalTok{state}
+\NormalTok{LAGOSnutrient <-}\StringTok{ }\NormalTok{LAGOSdata}\OperatorTok{$}\NormalTok{epi_nutr}
+
+\NormalTok{LAGOSlocus}\OperatorTok{$}\NormalTok{lagoslakeid <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(LAGOSlocus}\OperatorTok{$}\NormalTok{lagoslakeid)}
+\NormalTok{LAGOSnutrient}\OperatorTok{$}\NormalTok{lagoslakeid <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(LAGOSnutrient}\OperatorTok{$}\NormalTok{lagoslakeid)}
+
+\NormalTok{LAGOSlocations <-}\StringTok{ }\KeywordTok{left_join}\NormalTok{(LAGOSlocus, LAGOSstate, }\DataTypeTok{by =} \StringTok{"state_zoneid"}\NormalTok{)}
+
+\NormalTok{LAGOSNandP <-}\StringTok{ }
+\StringTok{  }\KeywordTok{left_join}\NormalTok{(LAGOSnutrient, LAGOSlocations, }\DataTypeTok{by =} \StringTok{"lagoslakeid"}\NormalTok{) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{select}\NormalTok{(lagoslakeid, sampledate, tn, tp, state, state_name) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{mutate}\NormalTok{(}\DataTypeTok{sampleyear =} \KeywordTok{year}\NormalTok{(sampledate), }
+         \DataTypeTok{samplemonth =} \KeywordTok{month}\NormalTok{(sampledate))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Column `lagoslakeid` joining factors with different levels,
+## coercing to character vector
+\end{verbatim}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{8}
+\tightlist
+\item
+  Create two violin plots comparing TN and TP concentrations across
+  states. Include a 50th percentile line inside the violins.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stateTNviolin <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state, }\DataTypeTok{y =}\NormalTok{ tn)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_violin}\NormalTok{(}\DataTypeTok{draw_quantiles =} \FloatTok{0.50}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(stateTNviolin)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 774226 rows containing non-finite values (stat_ydensity).
+\end{verbatim}
+
+\begin{verbatim}
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+
+## Warning in regularize.values(x, y, ties, missing(ties)): collapsing to
+## unique 'x' values
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-5-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stateTPviolin <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state, }\DataTypeTok{y =}\NormalTok{ tp)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_violin}\NormalTok{(}\DataTypeTok{draw_quantiles =} \FloatTok{0.50}\NormalTok{)}
+\KeywordTok{print}\NormalTok{(stateTPviolin)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 672861 rows containing non-finite values (stat_ydensity).
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+
+## Warning: collapsing to unique 'x' values
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-5-2.pdf}
+
+Which states have the highest and lowest median concentrations?
+
+\begin{quote}
+TN: Highest: Iowa; Lowest: Vermont, New Hamsphire, and Maine (this
+visualization makes it difficult to be certain)
+\end{quote}
+
+\begin{quote}
+TP: Highest: Illinois; Lowest: Maine (though this visualization makes it
+difficult to be certain)
+\end{quote}
+
+Which states have the highest and lowest concentration ranges?
+
+\begin{quote}
+TN: Highest range: Iowa; Lowest range: Vermont or New Hampshire
+\end{quote}
+
+\begin{quote}
+TP: Highest range: Illinois, Massachusetts, Minnesota; Lowest range:
+Pennsylvania
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{9}
+\tightlist
+\item
+  Create two jitter plots comparing TN and TP concentrations across
+  states, with samplemonth as the color. Choose a color palette other
+  than the ggplot default.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{LAGOSNandP}\OperatorTok{$}\NormalTok{state <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(LAGOSNandP}\OperatorTok{$}\NormalTok{state)}
+\NormalTok{LAGOSNandP}\OperatorTok{$}\NormalTok{state_name <-}\StringTok{ }\KeywordTok{as.factor}\NormalTok{(LAGOSNandP}\OperatorTok{$}\NormalTok{state_name)}
+
+\NormalTok{stateTNjitter <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state_name, }\DataTypeTok{y =}\NormalTok{ tn, }\DataTypeTok{color =}\NormalTok{ samplemonth)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_jitter}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{"TSI(tn)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{option =} \StringTok{"magma"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{, }\DataTypeTok{vjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\KeywordTok{print}\NormalTok{(stateTNjitter)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 774226 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-6-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stateTPjitter <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state_name, }\DataTypeTok{y =}\NormalTok{ tp, }\DataTypeTok{color =}\NormalTok{ samplemonth)) }\OperatorTok{+}
+\StringTok{ }\KeywordTok{geom_jitter}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{"TSI(tp)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{option =} \StringTok{"magma"}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{, }\DataTypeTok{vjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\KeywordTok{print}\NormalTok{(stateTPjitter)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 672861 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-6-2.pdf}
+
+Which states have the most samples? How might this have impacted total
+ranges from \#9?
+
+\begin{quote}
+TN: Most: Iowa; Least: Vermont.
+\end{quote}
+
+\begin{quote}
+TP: Most: Illinois, Minnesota, Wisconsin; Least: New Hampshire
+\end{quote}
+
+Which months are sampled most extensively? Does this differ among
+states?
+
+\begin{quote}
+TN: It appears that the late summer months are the most extensively
+samples. There does seem to be some differing among states, as some seem
+to sample exclusively during the summer and some do so across multiple
+seasons.
+\end{quote}
+
+\begin{quote}
+TP: Again, it appears that the late summer months are the most
+extensively samples. There does seem to be some differing among states,
+as some seem to sample exclusively during the summer and some do so
+across multiple seasons.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{10}
+\tightlist
+\item
+  Create two jitter plots comparing TN and TP concentrations across
+  states, with sampleyear as the color. Choose a color palette other
+  than the ggplot default.
+\end{enumerate}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stateTNjitter.year <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state_name, }\DataTypeTok{y =}\NormalTok{ tn, }\DataTypeTok{color =}\NormalTok{ sampleyear)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_jitter}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{"TSI(tn)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{option =} \StringTok{"magma"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{, }\DataTypeTok{vjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\KeywordTok{print}\NormalTok{(stateTNjitter.year)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 774226 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-7-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{stateTPjitter.year <-}\StringTok{ }\KeywordTok{ggplot}\NormalTok{(LAGOSNandP, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ state_name, }\DataTypeTok{y =}\NormalTok{ tp, }\DataTypeTok{color =}\NormalTok{ sampleyear)) }\OperatorTok{+}
+\StringTok{ }\KeywordTok{geom_jitter}\NormalTok{(}\DataTypeTok{alpha =} \FloatTok{0.3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{labs}\NormalTok{(}\DataTypeTok{x =} \StringTok{""}\NormalTok{, }\DataTypeTok{y =} \StringTok{"TSI(tp)"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{legend.position =} \StringTok{"top"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_color_viridis_c}\NormalTok{(}\DataTypeTok{option =} \StringTok{"magma"}\NormalTok{)}\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.text.x =} \KeywordTok{element_text}\NormalTok{(}\DataTypeTok{angle =} \DecValTok{45}\NormalTok{, }\DataTypeTok{vjust =} \DecValTok{1}\NormalTok{, }\DataTypeTok{hjust=}\DecValTok{1}\NormalTok{))}
+\KeywordTok{print}\NormalTok{(stateTPjitter.year)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: Removed 672861 rows containing missing values (geom_point).
+\end{verbatim}
+
+\includegraphics{A05_LakeWQ_files/figure-latex/unnamed-chunk-7-2.pdf}
+
+Which years are sampled most extensively? Does this differ among states?
+
+\begin{quote}
+TN: It appears that the majority of samples are from 2000 to the
+present. It doesn't seem to differ drastically between states.
+\end{quote}
+
+\begin{quote}
+TP: It appears that most of the samples are from 2000 to the present,
+but there's a decent amount that seem to date back to the mid-70s. The
+TP samples have more more variation between states in regards to when
+samples were collected.
+\end{quote}
+
+\hypertarget{reflection}{%
+\subsection{Reflection}\label{reflection}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{11}
+\tightlist
+\item
+  What are 2-3 conclusions or summary points about lake water quality
+  you learned through your analysis?
+\end{enumerate}
+
+\begin{quote}
+Different variables can indicate very different levels of
+eutrophication. The time of year data is sampled can play a large role
+on the trends seen in data.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{12}
+\tightlist
+\item
+  What data, visualizations, and/or models supported your conclusions
+  from 12?
+\end{enumerate}
+
+\begin{quote}
+The trophic data where we looked at the proportion of total observations
+which are considered eutrophic or hypereutrophic. (Count data
+statistics) States that sampled more frequently and sampled across
+seasons have larger ranges in their concentration data. (Jitter plots
+showed us this)
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{13}
+\tightlist
+\item
+  Did hands-on data analysis impact your learning about water quality
+  relative to a theory-based lesson? If so, how?
+\end{enumerate}
+
+\begin{quote}
+Yes, having the opportunity to analyze real-world data allows for more
+critical thinking skills to be used to understnad trends and apply
+theoretical expectations to real-world data.
+\end{quote}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{14}
+\tightlist
+\item
+  How did the real-world data compare with your expectations from
+  theory?
+\end{enumerate}
+
+\begin{quote}
+There real-world data illustrates how messy things can be, and how
+sample size and timing (sampling decisions are made by humans!) can play
+a huge factor in the types of trends you see.
+\end{quote}
+
+
+\end{document}

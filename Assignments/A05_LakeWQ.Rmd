@@ -39,7 +39,7 @@ theme_set(theme_classic())
 options(scipen = 100)
 
 load(file = "./Data/Raw/LAGOSdata.rda")
-LAGOStrophic <- read_csv(file = "./Data/trophic.20190927.csv")
+LAGOStrophic <- read_csv(file = "./Data/LAGOStrophic.csv")
 
 ```
 
@@ -114,7 +114,7 @@ count.tp[4,2]/sum(count.tp$n) #0.096
 
 Which of these metrics is most conservative in its designation of eutrophic conditions? Why might this be?
 
-> Total phosphorus - 
+> Total phosphorus. This is likely because there are more things that could influence the other two variables. For secchi depth, it can be affected by things such as dissolved organics or sediments in the water. And chorophyll-a has more things that can influence it's values that do not affect total phosphorus concentrations (for example, nitrogen would might increase chlorophyll-a but not total phosphorus).
 
 Note: To take this further, a researcher might determine which trophic classes are susceptible to being differently categorized by the different metrics and whether certain metrics are prone to categorizing trophic class as more or less eutrophic. This would entail more complex code.
 
@@ -156,15 +156,15 @@ print(stateTPviolin)
 
 Which states have the highest and lowest median concentrations?
 
-> TN:
+> TN: Highest: Iowa; Lowest: Vermont, New Hamsphire, and Maine (this visualization makes it difficult to be certain)
 
-> TP:
+> TP: Highest: Illinois; Lowest: Maine (though this visualization makes it difficult to be certain)
 
 Which states have the highest and lowest concentration ranges?
 
-> TN: 
+> TN: Highest range: Iowa; Lowest range: Vermont or New Hampshire
 
-> TP: 
+> TP: Highest range: Illinois, Massachusetts, Minnesota; Lowest range: Pennsylvania
 
 10. Create two jitter plots comparing TN and TP concentrations across states, with samplemonth as the color. Choose a color palette other than the ggplot default.
 
@@ -193,58 +193,60 @@ print(stateTPjitter)
 
 Which states have the most samples? How might this have impacted total ranges from #9?
 
-> TN:
+> TN: Most: Iowa; Least: Vermont. 
 
-> TP: 
+> TP: Most: Illinois, Minnesota, Wisconsin; Least: New Hampshire
 
 Which months are sampled most extensively? Does this differ among states?
 
-> TN:
+> TN: It appears that the late summer months are the most extensively samples. There does seem to be some differing among states, as some seem to sample exclusively during the summer and some do so across multiple seasons. 
 
-> TP: 
+> TP: Again, it appears that the late summer months are the most extensively samples. There does seem to be some differing among states, as some seem to sample exclusively during the summer and some do so across multiple seasons. 
 
 11. Create two jitter plots comparing TN and TP concentrations across states, with sampleyear as the color. Choose a color palette other than the ggplot default.
 
 ```{r}
 
-stateTNjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tn, color = sampleyear)) +
+stateTNjitter.year <- ggplot(LAGOSNandP, aes(x = state_name, y = tn, color = sampleyear)) +
   geom_jitter(alpha = 0.3) +
   labs(x = "", y = "TSI(tn)") +
   theme(legend.position = "top") +
   scale_color_viridis_c(option = "magma") +
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-print(stateTNjitter)
+print(stateTNjitter.year)
 
-stateTPjitter <- ggplot(LAGOSNandP, aes(x = state_name, y = tp, color = sampleyear)) +
+stateTPjitter.year <- ggplot(LAGOSNandP, aes(x = state_name, y = tp, color = sampleyear)) +
  geom_jitter(alpha = 0.3) +
   labs(x = "", y = "TSI(tp)") +
   theme(legend.position = "top") +
   scale_color_viridis_c(option = "magma")+
   theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust=1))
-print(stateTPjitter)
+print(stateTPjitter.year)
 
 ```
 
 
 Which years are sampled most extensively? Does this differ among states?
 
-> TN:
+> TN: It appears that the majority of samples are from 2000 to the present. It doesn't seem to differ drastically between states.
 
-> TP: 
+> TP: It appears that most of the samples are from 2000 to the present, but there's a decent amount that seem to date back to the mid-70s. The TP samples have more more variation between states in regards to when samples were collected. 
 
 ## Reflection
 12. What are 2-3 conclusions or summary points about lake water quality you learned through your analysis?
 
->
+> Different variables can indicate very different levels of eutrophication.
+> The time of year data is sampled can play a large role on the trends seen in data.
 
 13. What data, visualizations, and/or models supported your conclusions from 12?
 
-> 
+> The trophic data where we looked at the proportion of total observations which are considered eutrophic or hypereutrophic. (Count data statistics)
+> States that sampled more frequently and sampled across seasons have larger ranges in their concentration data. (Jitter plots showed us this)
 
 14. Did hands-on data analysis impact your learning about water quality relative to a theory-based lesson? If so, how?
 
->
+> Yes, having the opportunity to analyze real-world data allows for more critical thinking skills to be used to understnad trends and apply theoretical expectations to real-world data.
 
 15.	How did the real-world data compare with your expectations from theory?
 
->
+> There real-world data illustrates how messy things can be, and how sample size and timing (sampling decisions are made by humans!) can play a huge factor in the types of trends you see.

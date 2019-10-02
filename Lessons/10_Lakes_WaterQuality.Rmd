@@ -31,7 +31,7 @@ library(corrplot)
 library(car)
 
 theme_set(theme_classic())
-options(scipen = 100)
+#options(scipen = 100)
 
 # Load LAGOSNE data into R session
 #LAGOSdata <- lagosne_load()
