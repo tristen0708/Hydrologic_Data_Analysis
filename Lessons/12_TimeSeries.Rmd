@@ -57,9 +57,17 @@ Adjusting the data may be necessary to fulfill the assumptions of a trend test. 
 
 > aggregation: 
 
+Means, median, range; Reduce rows into more useful set to do time series
+
 > subsampling: 
 
+let's say one year we sample every week, one year we sample bi-weekly ;
+don't want to aggregate... will do by loking at two week
+
 > interpolation: 
+
+fill in missing data to have even time series
+
 
 Specific tests for monotonic trend analysis are listed below, with assumptions and tips: 
 
@@ -79,6 +87,7 @@ Lake Mendota (Wisconsin, USA) is often considered the birthplace of limnology an
 Today we will work with total phosphorus data from Lake Mendota to determine whether there has been a monotonic trend in these concentrations over time. 
 
 ```{r}
+
 # create a dataframe for nutrients
 LAGOSnutrient <- LAGOSdata$epi_nutr
 
@@ -96,6 +105,7 @@ MendotaTP <-
 ggplot(Mendotadata, aes(x = sampledate, y = tp)) +
   geom_point()
 print(MendotaTP)
+
 ```
 
 It is crucially important to visualize your time series before moving forward with any test. In this case, we notice two major issues: 
@@ -106,6 +116,7 @@ It is crucially important to visualize your time series before moving forward wi
 Detecting whether the outlier is a true measurement or a mistake in the dataset would be recommended at this point. Regardless, we know that a single large point that is more than 3x the value of the next largest value in the dataset will interfere with answering our question, particularly if we use this value for interpolation. Let's choose to leave this value out of the dataset for our purposes today (a more thorough QA/QC check would be recommended though).
 
 ```{r}
+
 # Remove issues 1 and 2, arrange by date
 Mendotadata <- Mendotadata %>%
   filter(tp < 300 & sampledate > "1988-01-01") %>%
@@ -117,6 +128,7 @@ ggplot(Mendotadata, aes(x = sampledate, y = tp)) +
   geom_point() +
   geom_line()
 print(MendotaTP)
+
 ```
 
 We see distinct seasonality, with higher TP values occurring in the winter compared to summer. Therefore, we will proceed with a **Seasonal Mann-Kendall** test. 
@@ -125,12 +137,14 @@ We see that TP data were collected somewhere between biweekly and monthly across
 
 Common interpolation methods: 
 
-* **Piecewise constant**: <fill in notes here>
-* **Linear**: <fill in notes here>
-* **Spline**: <fill in notes here>
+* **Piecewise constant**: take the nearest point and use that estimate "nearest neighbor"
+* **Linear**: straight line between points
+* **Spline**:connects with a curvy line - doesn't necessarily work better than linear for aquatic sciences though
 
 Linear interpolation is most common for water quality data, and fits with our understanding about how TP might change over time in this system. 
+
 ```{r}
+
 # Generate monthly values from July 1988 to August 2013
 linearinterpolation <- as.data.frame(approx(Mendotadata, n = 303, method = "linear"))
 linearinterpolation$x <- as.Date(linearinterpolation$x, origin = "1970-01-01")
@@ -151,14 +165,17 @@ Mendotatimeseries <- ts(linearinterpolation$TP, frequency = 12,
 Mendotatrend <- smk.test(Mendotatimeseries)
 
 # Inspect results
-Mendotatrend
+Mendotatrend 
+#Z score gives us direction and magnitude of our trend
+#p-value tells us if trend is significant
+#S - the larger in magnitude, the greater the trend
 summary(Mendotatrend)
 
 ```
 
 What would we conclude based on these findings? Describe as you would to an educated but non-specialist audience.
 
->
+> Overall, there is no significant change in total phosphorus concentrations from 1988 to 2013; however, for the months of October and November specifically, there is a significant decrease in total phosphorus concentrations over our time series. 
  
 If a significant trend was present, we could compute a **Sen's Slope** to quantify that trend (`sens.slope` function in the trend package).
  
@@ -176,6 +193,7 @@ https://nwfsc-timeseries.github.io/atsa-labs/sec-tslab-moving-average-ma-models.
 
 Let's upload the Clear Creek discharge dataset. We will **aggregate** the data by averaging monthly values. We will then turn this into a time series, which is the format needed for ARMA modeling. 
 ```{r}
+
 ClearCreekDischarge <- readNWISdv(siteNumbers = "06719505",
                      parameterCd = "00060", # discharge (ft3/s)
                      startDate = "",
@@ -195,13 +213,19 @@ ClearCreek_ts <- ts(ClearCreekDischarge.Monthly[[3]], frequency = 12)
 ARMA models require stationary data. This means that there is no monotonic trend over time and there is also equal variance and covariance across the time series. The function `adf.test` will determine whether our data are stationary. The null hypothesis is that the data are not stationary, so we infer that the data are stationary if the p-value is < 0.05.
 
 ```{r}
+
 adf.test(ClearCreek_ts, alternative = "stationary")
+
+#We WANT stationary data- so we WANT to reject the null hypothesis and have a low p-value
+
 ```
 
 Let's inspect the ACF and pacf plots. Notice these don't match up perfectly with just one AR or MA formulation, so we likely have interactions of both processes at play. 
 ```{r}
+
 acf(ClearCreek_ts)
 pacf(ClearCreek_ts)
+
 ```
 
 While some processes might be easy to identify, it is often complicated to predict the order of AR and MA processes when the operate in the same dataset. To get around this issue, we will run multiple potential formulations of the model and see which one results in the most parsimonious fit using AIC. The function `auto.arima` does this automatically.
@@ -218,6 +242,7 @@ ClearCreekprediction <- predict(fit, n.ahead = 10*12)
 
 # plot future predictions
 ts.plot(ClearCreek_ts, ClearCreekprediction$pred, lty = c(1, 3))
+
 ```
 
 How do future predictions compare to the past? What other covariates might you bring into the analysis to improve forecasting capabilities?
