@@ -1,6 +1,6 @@
 ---
 title: "Assignment 6: Time Series Analysis"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,6 +29,18 @@ The completed exercise is due on 11 October 2019 at 9:00 am.
 
 ```{r setup}
 
+getwd()
+
+library(tidyverse)
+library(lubridate)
+library(trend)
+library(dataRetrieval)
+library(tseries)
+
+theme_set(theme_classic())
+
+ClearCreekDischarge.Monthly <- read.csv("../Data/Processed/ClearCreekDischarge.Monthly.csv")
+
 ```
 
 ## Time Series Decomposition
@@ -37,46 +49,96 @@ The completed exercise is due on 11 October 2019 at 9:00 am.
 7. Create a time series of discharge
 8. Decompose the time series using the `stl` function.
 9. Visualize the decomposed time series.
+
 ```{r}
+
+#Create new dataframe with Eno River discharge 
+EnoRiverDischarge <- readNWISdv(siteNumbers = "02085070",
+                     parameterCd = "00060", # discharge (ft3/s)
+                     startDate = "",
+                     endDate = "")
+names(EnoRiverDischarge)[4:5] <- c("Discharge", "Approval.Code")
+class(EnoRiverDischarge$Date)
+
+#Plot Eno River discharge
+EnoRiverPlot <- 
+  ggplot(EnoRiverDischarge, aes(x = Date, y = Discharge)) +
+  geom_line() +
+  labs(x = "", y = expression("Discharge (ft"^3*"/s)")) + 
+  theme(plot.title = element_text(margin = margin(b = -10), size = 12), 
+       axis.title.x = element_blank())
+print(EnoRiverPlot)
+
+#Create time series of discharge data
+EnoRiver_ts <- ts(EnoRiverDischarge[[4]], frequency = 365)
+
+#Decompose time series
+EnoRiver_Decomposed <- stl(EnoRiver_ts, s.window = "periodic")
+
+#Visualize the decomposed series 
+plot(EnoRiver_Decomposed)
+
+#Extract the components and turn them into data frames
+EnoRiver_Components <- as.data.frame(EnoRiver_Decomposed$time.series[,1:3])
+EnoRiver_Components <- mutate(EnoRiver_Components,
+                      Observed = EnoRiverDischarge$Discharge,     
+                      Date = EnoRiverDischarge$Date)
+
 
 ```
 
 10. How do the seasonal and trend components of the decomposition compare to the Clear Creek discharge dataset? Are they similar in magnitude?
 
-> Seasonal: 
+> Seasonal: The season component for the Eno River is much smaller in magnitude than the Clear Creek discharge dataset.
 
-> Trend: 
+> Trend: The trend component for the Eno River is more similar to the Clear Creek discharge dataset in magnitude.
 
 ## Trend Analysis
 Research question: Has there been a monotonic trend in discharge in Clear Creek over the period of study?
 
 11. Generate a time series of monthly discharge in Clear Creek from the ClearCreekDischarge.Monthly data frame. This time series should include just one column (discharge). 
 12. Run a Seasonal Mann-Kendall test on the monthly discharge data. Inspect the overall trend and the monthly trends. 
+
 ```{r}
+
+# Generate time series (smk.test needs ts, not data.frame)
+ClearCreek.ts <- ts(ClearCreekDischarge.Monthly$Discharge, frequency = 12, 
+                        start = c(1974, 10), end = c(2019, 10))
+# Run SMK test
+ClearCreek.trend <- smk.test(ClearCreek.ts)
+
+#Look at results of SMK
+ClearCreek.trend #p = 0.09719, Z = 1.6586
+summary(ClearCreek.trend)
+
+#Extra test for monotonicity
+adf.test(ClearCreek.ts, alternative = "stationary") #p = 0.01
 
 ```
 
 13. Is there an overall monotonic trend in discharge over time? If so, is it positive or negative?
 
-> 
+> No, the results of the SMK test do not indicate there is a monotonic trend since the p-value is not less than 0.05. Futhermore, an additional ADF test, also indicates the data is stationary (p-value less than 0.05 which indicates stationarity).
 
 14. Are there any monthly monotonic trends in discharge over time? If so, during which months do they occur and are they positive or negative?
 
-> 
+> Yes, there are. They occur in March and April and both are positive trends (p-values lower than 0.05 and positive z-scores).
 
 ## Reflection
 15. What are 2-3 conclusions or summary points about time series you learned through your analysis?
 
->
+> Time series need to have constant time intervals to be accurate
+> The scale of time you are looking for a change could influence how you interpret your results.
 
 16. What data, visualizations, and/or models supported your conclusions from 12?
 
-> 
+> Generation of the time series required inputting the time frequency, so any missing data could make it problematic (since date isn't included). 
+> Clear Creek didn't have an overall change in trend (either increasing or decreasing) when we look at things on an annual basis, but there are significant changes in the trends when we look month by month.
 
 17. Did hands-on data analysis impact your learning about time series relative to a theory-based lesson? If so, how?
 
->
+> Yes, being able to know how to adjust gaps in data is a good skill to understand and practice.
 
 18.	How did the real-world data compare with your expectations from theory?
 
->
+> As usual, real-world data is a bit messier to deal with and we have to be mindful of how to adjust for that in our analyses. 
