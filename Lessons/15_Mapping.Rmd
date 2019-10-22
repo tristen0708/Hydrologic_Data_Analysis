@@ -56,6 +56,7 @@ library(LAGOSNE)
 library(sf)
 library(maps)
 library(gganimate)
+library(rgeos)
 
 theme_set(theme_classic())
 options(scipen = 100)
@@ -72,6 +73,7 @@ LAGOSdata <- lagosne_load()
 We will be using the `st_as_sf` function today, which converts an object to a simple features object. Notice in the "states" object contains a column called "geometry", which contains a list of coordinates. Notice each cell in this column is a list, which can be expanded to look at the different coordinates used to draw a polygon. We plot the polygons with the `geom_sf` function. 
 
 ```{r}
+
 # generate a map of U.S. states
 states <- st_as_sf(map(database = "state", plot = TRUE, fill = TRUE, col = "white"))
 
@@ -82,14 +84,17 @@ states.subset <- filter(states, ID %in%
                             "pennsylvania", "new york", "new jersey",
                             "connecticut", "new hampshire", "rhode island",
                             "massachusetts", "vermont", "maine"))
+
 # visualize state plot
 LAGOSstateplot <- ggplot(states.subset) +
   geom_sf(fill = "white")
 print(LAGOSstateplot)
+
 ```
 
 ## Data wrangling
 ```{r}
+
 # load LAGOSNE data frames
 LAGOSlocus <- LAGOSdata$locus
 LAGOSstate <- LAGOSdata$state
@@ -103,12 +108,14 @@ LAGOScombined <-
   left_join(., LAGOSstate) %>%
   filter(!is.na(state)) %>%
   select(lagoslakeid, sampledate, secchi, lake_area_ha, maxdepth, nhd_lat, nhd_long, state)
+
 ```
 
 Notice that in the absence of specifying specific columns to join by, the `left_join` function will choose columns itself. The resulting data frame has the same amount of rows as the LAGOSnutrient data frame, minus any observations that listed state as NA. Be careful when relying on this functionality! Always double check your final data frame to make sure it contains the correct data and that your joins have proceeded as planned.
 
 Let's create a new data frame of average secchi depth for each lake. Notice that in the `summarise` function (also can use `summarize`) we also compute the "mean" of max depth, latitude, and longitude for each lake. These should all be the same for every observation at a given lake, so taking the mean just uses that one value.
 ```{r}
+
 secchi.summary <- LAGOScombined %>%
   group_by(lagoslakeid) %>%
   summarise(secchi.mean = mean(secchi),
@@ -117,6 +124,7 @@ secchi.summary <- LAGOScombined %>%
             lat = mean(nhd_lat), 
             long = mean(nhd_long)) %>%
   drop_na()
+
 ```
 
 ## A Word on Projections
@@ -127,6 +135,7 @@ For today, we will use the EPSG projection 4326, also known by WGS 84. This proj
 
 ## Plotting secchi depths across LAGOSNE lakes
 ```{r}
+
 secchi.spatial <- st_as_sf(secchi.summary, coords = c("long", "lat"), crs = 4326)
 
 Secchiplot <- ggplot() +
@@ -147,17 +156,45 @@ Your turn! Notice that Maine has a large number of lakes with secchi depth measu
 
 ```{r}
 
+maine <- filter(states, ID %in% 
+                          c("maine"))
+
+maine.summary <- LAGOScombined %>%
+  filter(state == "ME") %>%
+  group_by(lagoslakeid) %>%
+  summarise(secchi.mean = mean(secchi), 
+            area = mean(lake_area_ha),
+            depth = mean(maxdepth),
+            lat = mean(nhd_lat), 
+            long = mean(nhd_long)) %>%
+  drop_na()
+
+
+mainesecchi.spatial <- st_as_sf(maine.summary, coords = c("long", "lat"), crs = 4326)
+
 ```
 
 2. Create a plot of mean secchi depth for lakes in Maine, with mean secchi depth designated as color and the lake area as the size of the dot. Remember that you are using size in the aesthetics and should remove the size = 1 from the other part of the code. Adjust the transparency of points as needed.
 
 ```{r}
 
+MEplot <- ggplot() +
+  geom_sf(data = maine, fill = "white") +
+  geom_sf(data = mainesecchi.spatial, aes(color = secchi.mean, size = area), 
+          alpha = 0.5) +
+  scale_color_viridis_c() +
+  labs(color = "Average Secchi Depth (m)") +
+  theme(legend.position = "top")
+print(MEplot)
+
+
 ```
 
 3. Create a second plot, but this time use maximum depth of the lake as the size of the dot. 
 
 ```{r}
+
+
 
 ```
 

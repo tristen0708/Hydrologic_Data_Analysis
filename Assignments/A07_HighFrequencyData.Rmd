@@ -1,6 +1,6 @@
 ---
 title: "Assignment 7: High Frequency Data"
-author: "Student Name"
+author: "Tristen Townsend"
 output: pdf_document
 geometry: margin=2.54cm
 editor_options: 
@@ -29,6 +29,14 @@ The completed exercise is due on 16 October 2019 at 9:00 am.
 
 ```{r setup}
 
+getwd()
+
+library(streamMetabolizer)
+library(StreamPULSE)
+library(tidyverse)
+
+theme_set(theme_classic())
+
 ```
 
 
@@ -37,6 +45,15 @@ The completed exercise is due on 16 October 2019 at 9:00 am.
 5. Reformat the data into one dataframe with columns DateTime_UTC, DateTime_Solar (using `convert_UTC_to_solartime()`), SiteName, DO_mgL, Discharge_m3s, and Nitrate_mgL.
 ```{r Datadownload}
 
+Kansas.dat <- request_data(sitecode = "KS_KANSASR", 
+                  variables = c('Discharge_m3s', 'DO_mgL', 
+                                'Nitrate_mgL'))
+
+Kansas.lon <- Kansas.dat[[2]]$lon
+
+Kansas.DO <- Kansas.dat[[1]] %>%
+  spread(value = value, key = variable) %>%
+  mutate(DateTime_Solar = convert_UTC_to_solartime(DateTime_UTC, Kansas.lon))
 
 ```
 
@@ -44,15 +61,21 @@ The completed exercise is due on 16 October 2019 at 9:00 am.
 
 ```{r}
 
+ggplot(Kansas.DO, aes(x = DateTime_Solar, y = Discharge_m3s)) + geom_line()
+
+ggplot(Kansas.DO, aes(x = DateTime_Solar, y = DO_mgL)) + geom_line()
+
+ggplot(Kansas.DO, aes(x = DateTime_Solar, y = Nitrate_mgL)) + geom_line()
+
 ```
 
 7. How will you address gaps in these dataseries?
 
->
+> 
 
 8. How does the daily amplitude of oxygen concentration swings change over the season? What might cause this?
 
->
+> 
 
 ## Baseflow separation
 9. Use the `EcoHydRology::BaseflowSeparation()` function to partition discharge into baseflow and quickflow, and calculate how much water was exported as baseflow and quickflow for this time period. Use the DateTime_UTC column as your timestamps in this analysis.
@@ -63,6 +86,30 @@ The `package::function()` notation being asked here is a way to call a function 
 
 
 ```{r}
+EcoHydRology::BaseflowSeparation()
+
+Kansas.baseflow <- BaseflowSeparation(
+  dischargedatTFC2018$Flow_Inst, 
+  filter_parameter = 0.925, 
+  passes = 3)
+
+TFC2018 <- cbind(dischargedatTFC2018, TFCbaseflow)
+
+ggplot(TFC2018, aes(x = dateTime, y = Flow_Inst)) + 
+  geom_line() +
+  scale_y_log10() +
+  geom_line(mapping = aes(x = dateTime, y = bt), color = "darkorange4") +
+  geom_line(mapping = aes(x = dateTime, y = qft), color = "steelblue4")
+
+
+Export <- TFC2018 %>%
+  mutate(timestep = c(diff(as.numeric(dateTime)), NA_real_),
+         baseflowexport = bt * timestep,
+         quickflowexport = qft * timestep) %>%
+  summarize(BaseflowExport_cf = sum(baseflowexport, na.rm = T),
+            QuickflowExport_cf = sum(quickflowexport, na.rm = T),
+            TotalExport_cf = BaseflowExport_cf + QuickflowExport_cf)
+
 
 ```
 
