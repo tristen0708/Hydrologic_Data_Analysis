@@ -10,29 +10,30 @@ editor_options:
 
 ## What questions will your team address?
 
-1. 
-
-2. 
-
-<add more numbers as needed>
+1. To what degree does climate change affect discharge in Alaskan streams and rivers?
 
 ## What hypotheses will your team address? 
 
 * Hypotheses should relate directly to your questions. Each numbered hypothesis should match up with the correponding numbered question. 
 * There may be multiple working hypotheses for a single question. If this is the case, note each hypothesis as 1a, 1b. etc.
 
-1. 
+1a. Streams at varying latitudes will have different responses to changing climate with monotonic trends.
 
-2. 
+1b. If streams are in areas that experience greater mean air temperature increases during spring seasons, then they will have greater discharge. 
 
-<add more numbers as needed>
+1c. The frequency of high discharge events will have increased through time due to climate change. 
+
 
 ## What dataset(s) will your team analyze?
 
+*USGS Alaska discharge data
+*Alaska site locations (spatial)
+*NOAA Alaska mean air temperature data
 
 
 ## How will you set up and manage your project repository? 
 
+We will have one master respository and ensure proper communication to avoid merge conflicts.
 
 
 ## Create a table of variables you will analyze.
@@ -44,6 +45,10 @@ editor_options:
 
 *Note: You may not know all of the individual variables you plan to analyze at this point. It is sufficient to describe what type of variable you anticipate using (e.g., land cover) and decide on specifics later*
 
+discharge, cfs, response, 1a. 1b, 1c
+date time, year/month/day, predictor, 1c
+site no, lat/long, predictor, 1a
+air temp, celsius, predictor, 1b
 
 
 ## What tasks will your team conduct? 
