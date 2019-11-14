@@ -34,6 +34,7 @@ getwd()
 library(streamMetabolizer)
 library(StreamPULSE)
 library(tidyverse)
+library(lubridate)
 
 theme_set(theme_classic())
 
@@ -51,9 +52,11 @@ Kansas.dat <- request_data(sitecode = "KS_KANSASR",
 
 Kansas.lon <- Kansas.dat[[2]]$lon
 
-Kansas.DO <- Kansas.dat[[1]] %>%
+Kansas <- Kansas.dat[[1]] %>%
   spread(value = value, key = variable) %>%
-  mutate(DateTime_Solar = convert_UTC_to_solartime(DateTime_UTC, Kansas.lon))
+  mutate(DateTime_Solar = convert_UTC_to_solartime(DateTime_UTC, Kansas.lon)) %>%
+  select(-region, -site, -flagtype, -flagcomment) 
+Kansas <- Kansas[,c(1,5,2,3,4)]
 
 ```
 
@@ -61,21 +64,21 @@ Kansas.DO <- Kansas.dat[[1]] %>%
 
 ```{r}
 
-ggplot(Kansas.DO, aes(x = DateTime_Solar, y = Discharge_m3s)) + geom_line()
+ggplot(Kansas, aes(x = DateTime_Solar, y = Discharge_m3s)) + geom_line()
 
-ggplot(Kansas.DO, aes(x = DateTime_Solar, y = DO_mgL)) + geom_line()
+ggplot(Kansas, aes(x = DateTime_Solar, y = DO_mgL)) + geom_line()
 
-ggplot(Kansas.DO, aes(x = DateTime_Solar, y = Nitrate_mgL)) + geom_line()
+ggplot(Kansas, aes(x = DateTime_Solar, y = Nitrate_mgL)) + geom_line()
 
 ```
 
 7. How will you address gaps in these dataseries?
 
-> 
+> Perform linear interpolation.
 
 8. How does the daily amplitude of oxygen concentration swings change over the season? What might cause this?
 
-> 
+> Swings become more dramatic during late spring and early summer. This is likely due to increased primary productivity during these seasons, which would raise DO concentrations during the day and make decreases during the evening (when there's no sunlight) seem more pronounced. Also, this is the time algal blooms could occur and create hypoxic conditions.
 
 ## Baseflow separation
 9. Use the `EcoHydRology::BaseflowSeparation()` function to partition discharge into baseflow and quickflow, and calculate how much water was exported as baseflow and quickflow for this time period. Use the DateTime_UTC column as your timestamps in this analysis.
@@ -86,24 +89,28 @@ The `package::function()` notation being asked here is a way to call a function 
 
 
 ```{r}
-EcoHydRology::BaseflowSeparation()
 
-Kansas.baseflow <- BaseflowSeparation(
-  dischargedatTFC2018$Flow_Inst, 
+linearinterpolation <- as.data.frame(approx(x = Kansas$DateTime_UTC, y = Kansas$Discharge_m3s, n = 11520, method = "linear"))
+linearinterpolation$x <- 
+  as.POSIXct(linearinterpolation$x, origin = "1970-01-01 00:00:00")
+names(linearinterpolation) <- c("Date", "Discharge")
+#na.approx (zoo package for high frequency data)
+
+Kansas.baseflow <- EcoHydRology::BaseflowSeparation(
+  linearinterpolation$Discharge, 
   filter_parameter = 0.925, 
   passes = 3)
 
-TFC2018 <- cbind(dischargedatTFC2018, TFCbaseflow)
+Kansas.full <- cbind(linearinterpolation, Kansas.baseflow)
 
-ggplot(TFC2018, aes(x = dateTime, y = Flow_Inst)) + 
+ggplot(Kansas.full, aes(x = Date, y = Discharge)) + 
   geom_line() +
-  scale_y_log10() +
-  geom_line(mapping = aes(x = dateTime, y = bt), color = "darkorange4") +
-  geom_line(mapping = aes(x = dateTime, y = qft), color = "steelblue4")
+  geom_line(mapping = aes(x = Date, y = bt), color = "darkorange4") +
+  geom_line(mapping = aes(x = Date, y = qft), color = "steelblue4")
 
 
-Export <- TFC2018 %>%
-  mutate(timestep = c(diff(as.numeric(dateTime)), NA_real_),
+Export <- Kansas.full %>%
+  mutate(timestep = c(diff(as.numeric(Date)), NA_real_),
          baseflowexport = bt * timestep,
          quickflowexport = qft * timestep) %>%
   summarize(BaseflowExport_cf = sum(baseflowexport, na.rm = T),
@@ -116,15 +123,16 @@ Export <- TFC2018 %>%
 
 11. What percentage of total water exported left as baseflow and quickflow from the Kansas River over this time period?
 
->
+> Baseflow: 619464345/644091609 --> 96%
+> Quickflow: =  24627264/644091609 --> 4%
 
 12. This is a much larger river and watershed than the 2 we investigated in class. How does the size of the watershed impact how flow is partitioned into quickflow and baseflow? 
 
->
+> Having a much larger watershed means the system is more stable and resistant to increases in quickflow. 
 
 13. The site we are looking at is also further down in its river network (i.e. instead of being a headwater stream, this river has multiple tributaries that flow into it). How does this impact your interpretation of your results?
 
->
+> Since it is further in the river network, it's likely that any increase in quickflow would eventually incorporate intself into the baseflow of the river by the time if made itself downstream. It supports the idea that the system is more resistant to large storms and quickflow.
 
 ## Chemical Hysteresis
 
@@ -132,29 +140,39 @@ Export <- TFC2018 %>%
 
 ```{r}
 
+KansasStorm <- Kansas %>%
+  filter(DateTime_UTC > "2018-05-01 00:00:00" & DateTime_UTC < "2018-05-20 00:00:00") 
+
+ggplot(KansasStorm, aes(x = Discharge_m3s, y = Nitrate_mgL, color = DateTime_UTC)) +
+  geom_point() 
+
+
 ```
 
 15. Does this storm show clockwise or counterclockwise hysteresis? Was this storm a flushing or diluting storm?
 
->
+> This storm shows clockwise hysteresis and is a flushing storm since nitrate concentrations increased with flow.
 
 16. What does this mean for how nitrate gets into the river from the watershed?
 
->
+> This means that nitrate is entering the river from higher in the watershed via runoff.
+
 
 ## Reflection
 17. What are 2-3 conclusions or summary points about high frequency data you learned through your analysis?
 
->
+> High frequency data is hard to manage!
+> We can use high frequency data to better understand how riverine systems respond to storms
 
 18. What data, visualizations, and/or models supported your conclusions from 17?
 
-> 
+> There's A LOT of observations for high frequency data (see Kansas discharge data measured every fifteen minutes) and it means that you are to take care in how it's analyzed and be as efficient as possible with wrangling 
+> The hysteresis plot allowed us to understand the storm was "flushing" which provides insights into how different pollutants make their way into the river.
 
 19. Did hands-on data analysis impact your learning about high frequency data relative to a theory-based lesson? If so, how?
 
->
+> Yes, working with the actual data always helps. Better understand the format data will be in and the challenges that accompany real world data.
 
 20.	How did the real-world data compare with your expectations from theory?
 
->
+> Roughly matches with theory, with some slight deviations
